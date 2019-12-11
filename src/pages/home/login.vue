@@ -1,0 +1,120 @@
+<template>
+  <div class="bgContent flex-c">
+    <!-- <van-uploader :after-read="afterRead" accept="*"/> -->
+    <van-tabs v-model="activeName" sticky class="bgContent" @click="tabChange">
+      <van-tab title="Keystore" name="a">
+        <div class="form-box HH100 pt-30">
+          <ul class="ul">
+            <li class="item">
+              <label class="label">Keystore:</label>
+              <div class="input-box">
+                <p class="input-text HH100 WW100 flex-c font14 color_99 plr15"><span id="fileName" class="line-block WW100 ellipsis" :title="fileName">{{fileName}}</span></p>
+                <input type="file" @change="fileUpChange" class="fileUpload">
+              </div>
+            </li>
+            <li class="item">
+              <label class="label">密码:</label>
+              <div class="input-box">
+                <input type="password" v-model="password" class="input-text HH100 WW100">
+              </div>
+            </li>
+            <li class="item">
+              <van-button type="info" @click="inputFile" class="WW100" :disabled="!showPwd || password.length <= 0">导入</van-button>
+            </li>
+          </ul>
+        </div>
+      </van-tab>
+      <van-tab title="私钥" name="b">
+        <div class="form-box HH100 pt-30">
+          <ul class="ul">
+            <li class="item">
+              <label class="label">私钥:</label>
+              <div class="input-box">
+                <input type="password" v-model="privateKey" class="input-text HH100 WW100">
+              </div>
+            </li>
+            <li class="item">
+              <van-button type="info" @click="inputPrivateKey" class="WW100" :disabled="privateKey.length <= 0">导入</van-button>
+            </li>
+          </ul>
+        </div>
+      </van-tab>
+    </van-tabs>
+  </div>
+</template>
+
+<style lang="scss">
+.form-box {
+  width: 100%;padding:0 15px;
+  .item {
+    width: 100%;margin-bottom:20px;
+    .label {
+      width: 100%;text-align: left;display: block;margin-bottom: 10px;font-size: 14px;font-weight: bold;
+    }
+    .input-box {
+      width: 100%;height: 40px;position: relative;
+    }
+  }
+}
+</style>
+
+<script>
+export default {
+  name: 'login',
+  data () {
+    return {
+      activeName: 'a',
+      fileData: '',
+      password: '',
+      privateKey: '',
+      showPwd: false,
+      fileName: '请上传Keystore'
+    }
+  },
+  mounted () {
+
+  },
+  methods: {
+    tabChange () {
+      this.fileData = ''
+      this.password = ''
+      this.privateKey = ''
+      this.showPwd = false
+      this.fileName = '请上传Keystore'
+    },
+    fileUpChange (event) {
+      let reader = new FileReader()
+      this.password = ""
+      let fileName = event.target.files[0].name
+      reader.onload = onLoadEvent => {
+        this.fileData = onLoadEvent.currentTarget.result
+        this.showPwd = this.$$.wallet.walletRequirePass(this.fileData)
+        if (this.showPwd) {
+          this.fileName = fileName
+        } else {
+          this.fileName = '请上传Keystore'
+        }
+      }
+      reader.readAsText(event.target.files[0])
+      this.password = ''
+    },
+    inputFile () {
+      let walletInfo = this.$$.wallet.getWalletFromPrivKeyFile(
+        this.fileData,
+        this.password
+      )
+      console.log(walletInfo.getPrivateKeyString())
+      console.log(walletInfo.getChecksumAddressString())
+      this.$store.commit('setKeystore', {info: this.fileData})
+      this.$store.commit('setAddress', {info: walletInfo.getChecksumAddressString()})
+      this.toUrl('/')
+    },
+    inputPrivateKey () {
+      let walletInfo = new this.$$.wallet(new Buffer(this.$$.fixPkey(this.privateKey), "hex"))
+      this.$store.commit('setAddress', {info: walletInfo.getChecksumAddressString()})
+      this.toUrl('/')
+      // console.log(walletInfo.toJSON())
+    }
+  }
+}
+</script>

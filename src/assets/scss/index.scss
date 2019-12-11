@@ -1,0 +1,12 @@
+.form-box {
+  width: 100%;padding:0 15px;
+  .item {
+    width: 100%;margin-bottom:20px;
+    .label {
+      width: 100%;text-align: left;display: block;margin-bottom: 10px;font-size: 14px;font-weight: bold;
+    }
+    .input-box {
+      width: 100%;height: 40px;position: relative;
+    }
+  }
+}
