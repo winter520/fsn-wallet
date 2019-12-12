@@ -168,8 +168,17 @@ export default {
   },
   mounted () {
     this.formData.id = this.$route.query.id
-    this.balance = this.$route.query.balance
-    
+    setTimeout(() => {
+      this.balance = this.$$.web3.fsn.getBalance('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff', this.address, 'latest')
+      // console.log(this.$$.web3.fsn.getBalance('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff', this.address, 'latest'))
+    }, 200)
+
+    // console.log(this.$$.web3.fsntx.buildSendAssetTx({
+    //   from: this.address,
+    //   to: '0xc1117600747c820751476c4d2ec78cca9bbebf6d',
+    //   value: '10',
+    //   asset: '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
+    // }))
     // console.log(this.$$.web3.fsn.getNotation("0x89fa3626bd0ae6e86d558a866f6044790ace8fd2", 'latest'))
     // console.log(this.$$.web3.fsn.getNotation(this.address, 'latest'))
     // console.log(this.$$.web3.isConnected())
@@ -231,6 +240,7 @@ export default {
       })
     },
     openPwd () {
+      this.formData.to = this.formData.to.replace(/\s/, '')
       if (!this.$$.web3.isAddress(this.formData.to)) {
         this.$notify('地址不正确')
         return
@@ -254,22 +264,30 @@ export default {
       }
       try {
         let prvtKey
+        let walletInfo
         if (fileData) {
-          const walletInfo = this.$$.wallet.getWalletFromPrivKeyFile(
+          walletInfo = this.$$.wallet.getWalletFromPrivKeyFile(
             fileData,
             this.password
           )
-          prvtKey = new Buffer(this.$$.fixPkey(walletInfo.getPrivateKeyString()), 'hex')
+          prvtKey = walletInfo.getPrivateKeyString()
+          prvtKey = new Buffer(this.$$.fixPkey(prvtKey), 'hex')
         } else {
           prvtKey = new Buffer(this.$$.fixPkey(this.privateKey), 'hex')
+          walletInfo = new this.$$.wallet(prvtKey)
+        }
+        if (this.address.toString() !== walletInfo.getChecksumAddressString().toString()) {
+          this.$notify('账户错误！')
+          return
         }
         this.getBaseData().then(res => {
           // console.log(res)
           let rawTx = res
           rawTx.from = this.address
-          rawTx.to = this.formData.to
-          // rawTx.value = this.$$.web3.toWei(this.formData.value, 'ether')
-          rawTx.value = this.formData.value
+          rawTx.to = this.formData.to.replace(/\s/, '')
+          rawTx.value = this.$$.web3.toWei(this.formData.value, 'ether')
+          // rawTx.value = '0x' + this.formData.value.toString('hex')
+          rawTx.value = Number(rawTx.value)
           console.log(rawTx)
           let Tx = require('ethereumjs-tx')
           let tx = new Tx(rawTx)

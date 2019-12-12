@@ -19,6 +19,10 @@
               <span>地址：</span>
               <span>{{address}}</span>
             </li>
+            <li class="WW100 item flex-sc font12">
+              <span>节点：</span>
+              <span>{{network}}</span>
+            </li>
           </ul>
         </div>
       </div>
@@ -31,11 +35,11 @@
             <ul class="list-box">
               <li v-for="(item, index) in balanceData" :key="index" class="item" @click="toUrl('/send', {id: index, balance: item})">
                 <p class="flex-sc">
-                  <span class="label">ASSET NAME：</span>{{formatAddr(index)}}
+                  <span class="label">资产名：</span>{{formatAddr(index)}}
                 </p>
                 <div class="flex-bc">
                   <p class="WW50 flex-sc"><span class="label">ID：</span>{{$$.cutOut(index, 8, 6)}}</p>
-                  <p class="WW50 flex-sc"><span class="label">AVAILABLE：</span>{{$$.thousandBit($$.web3.fromWei(item, 'ether'), 3)}}</p>
+                  <p class="WW50 flex-sc"><span class="label">余额：</span>{{$$.thousandBit($$.web3.fromWei(item, 'ether'), 3)}}</p>
                 </div>
               </li>
             </ul>
@@ -68,9 +72,9 @@
 .top-box {
   width: 100%;padding:10px 15px;
   .top-bg {
-    width: 100%;padding:10px 15px;background: #0099ff;border-radius: 5px;position:relative;
+    width: 100%;padding:15px 15px;background: #0099ff;border-radius: 5px;position:relative;
     .close {
-      position: absolute;top:10px;right: 15px;color:#fff;font-size: 14px;
+      position: absolute;top:15px;right: 15px;color:#fff;font-size: 14px;
     }
     .info {
       .item {
@@ -101,7 +105,8 @@ export default {
       balanceData: [],
       timelockData: [],
       addrNode: 0,
-      fsnId: '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
+      fsnId: '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+      network: localStorage.getItem('network')
     }
   },
   computed: {
@@ -116,7 +121,21 @@ export default {
     setTimeout(() => {
       this.initData()
     }, 300)
-
+    // console.log(this.$$.web3.fsntx.buildSendAssetTx({
+    //   from: '0xAa5dCD8d7644F9de310211d1211221a2BCF19D9D',
+    //   to: '0xE000E632124aa65B80f74E3e4cc06DC761610583',
+    //   value: '1000',
+    //   asset: '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
+    // }))
+    // console.log(this.$$.web3.fsn.sendAsset({
+    //   from: '0xE000E632124aa65B80f74E3e4cc06DC761610583',
+    //   gas: "0x15f90",
+    //   gasPrice: '0x3b9aca00',
+    //   nonce: '0x0',
+    //   asset: '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+    //   to: '0x91db50F5c36aE7616009d4e94462DcA4D4c7e833',
+    //   value: '0x1',
+    // }, '123456'))
   },
   methods: {
     close () {

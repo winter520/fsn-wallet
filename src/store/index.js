@@ -7,25 +7,25 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
   state: {
-    address: '',
-    keystore: ''
+    address: localStorage.getItem('address') ? localStorage.getItem('address') : '',
+    keystore: localStorage.getItem('keystore') ? localStorage.getItem('keystore') : ''
   },
   mutations: {
     setAddress (state, data) {
       let info = data.info ? data.info : ''
       state.address = info
-      // if (!data.type) {
-      //   // cookie.setCookie('address', info)
-      //   localStorage.setItem('address', info)
-      // }
+      if (!data.type) {
+        // cookie.setCookie('address', info)
+        localStorage.setItem('address', info)
+      }
     },
     setKeystore (state, data) {
       let info = data.info ? data.info : ''
       state.keystore = info
-      // if (!data.type) {
-      //   // cookie.setCookie('keystore', info)
-      //   localStorage.setItem('keystore', info)
-      // }
+      if (!data.type) {
+        // cookie.setCookie('keystore', info)
+        localStorage.setItem('keystore', info)
+      }
     },
   },
   actions: {

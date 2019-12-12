@@ -5,6 +5,7 @@ const Web3 = require('web3')
 import config from '@/config/index'
 // console.log(config)
 let web3
+
 try {
   // web3 = new Web3(new Web3.providers.HttpProvider('https://10.192.32.92'))
   web3 = new Web3(new Web3.providers.HttpProvider(config.serverURL))
@@ -129,8 +130,8 @@ web3._extend({
     new web3._extend.Method({
       name: 'sendAsset',
       call: 'fsntx_sendAsset',
-      params: 4,
-      inputFormatter: [null,null, null, null],
+      params: 1,
+      inputFormatter: [null],
       outputFormatter: null
     }),
     new web3._extend.Method({
