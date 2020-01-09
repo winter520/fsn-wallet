@@ -58,6 +58,7 @@ export default {
     },
     saveKeystoreAndEnter () {
       this.$store.commit('setAddress', {info: this.address})
+      this.$store.commit('setKeystore', {info: this.walletJSON})
       this.$store.commit('setKeystoreObj', {
         key: this.address,
         value: this.walletJSON

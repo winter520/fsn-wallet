@@ -6,7 +6,7 @@
       <div class="a-list-box">
         <ul>
           <li class="item flex-bc" v-for="(item, index) in addressArr" :key="index" @click="toUrl('/person/address/edit', item)">
-            <span class="flex-sc left"><van-icon name="records" class="font18 mr-10" /><i class="addr">{{item.address}}</i></span>
+            <span class="flex-sc left"><van-icon name="records" class="font18 mr-5" /><i class="addr">{{item.address}}</i></span>
             <van-icon name="arrow" />
           </li>
         </ul>
@@ -19,7 +19,7 @@
 .a-list-box {
   background: #fff;
   .item {
-    padding: 12px 15px;border-bottom: 1px solid #eee;font-size: 14px;color: #333333;cursor: pointer;
+    padding: 12px 10px;border-bottom: 1px solid #eee;font-size: 14px;color: #333333;cursor: pointer;
     .left {
       width: 100%;
       .addr {

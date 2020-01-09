@@ -21,8 +21,12 @@
           <span class="flex-c"><van-icon name="aim" class="font18 mr-10" />节点设置</span>
           <van-icon name="arrow" />
         </li>
-        <li class="item flex-bc mt-15" @click="close">
-          <span class="flex-c"><van-icon name="share" class="font18 mr-10" />退出</span>
+        <li class="item flex-bc mt-15" @click="toUrl('/login')">
+          <span class="flex-c"><van-icon name="peer-pay" class="font18 mr-10" />导入钱包</span>
+          <van-icon name="arrow" />
+        </li>
+        <li class="item flex-bc" @click="toUrl('/register')">
+          <span class="flex-c"><van-icon name="share" class="font18 mr-10" />创建钱包</span>
           <van-icon name="arrow" />
         </li>
       </ul>

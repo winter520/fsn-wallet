@@ -39,9 +39,9 @@ export default {
       })
     },
     changePath () {
-      console.log(this.$route)
+      // console.log(this.$route)
       let showHdOrBtn = this.$route.meta.showHdOrBtn
-      console.log(Number(showHdOrBtn))
+      // console.log(Number(showHdOrBtn))
       this.showHdOrBtn = Number(showHdOrBtn)
     }
   }

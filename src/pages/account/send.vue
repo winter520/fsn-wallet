@@ -28,7 +28,7 @@
         <li class="item">
           <label class="label">时间锁:</label>
           <div class="WW100">
-            <van-tabs v-model="activeName" sticky class="bgContent" @click="tabChangeTime">
+            <van-tabs v-model="activeName" sticky class="bgContent">
               <van-tab title="无" name="a">
               </van-tab>
               <van-tab title="时间段" name="b">
@@ -191,10 +191,10 @@ export default {
       this.password = ''
       this.privateKey = ''
     },
-    tabChangeTime (val) {
-      // console.log(val)
-      console.log(this.activeName)
-    },
+    // tabChangeTime (val) {
+    //   // console.log(val)
+    //   console.log(this.activeName)
+    // },
     changeTime (val) {
       let timestamp = Date.parse(val)
       this.formData[this.formTimeKey] = this.$$.timeChange({date: timestamp, type: 'yyyy-mm-dd', format: '-'})
@@ -373,22 +373,6 @@ export default {
         this.cancel()
       })
     }
-    // assetToTimeLock () {
-    //   this.$$.web3.fsn.assetToTimeLock(
-    //     this.formData.id,
-    //     this.address,
-    //     this.formData.to,
-    //     this.formData.id,
-    //     this.formData.id,
-    //     this.formData.id,
-    //   )
-    // },
-    // timeLockToTimeLock () {
-
-    // },
-    // timeLockToAsset () {
-
-    // },
   }
 }
 </script>

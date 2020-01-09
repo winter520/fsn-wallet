@@ -17,7 +17,7 @@
 .w-list-box {
   background: #fff;
   .item {
-    width: 100%;padding: 12px 5px;border-bottom: 1px solid #eee;font-size: 14px;color: #333333;cursor: pointer;
+    width: 100%;padding: 12px 10px;border-bottom: 1px solid #eee;font-size: 14px;color: #333333;cursor: pointer;
     .left {
       width: 80%;
       .addr {

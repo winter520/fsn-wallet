@@ -2,13 +2,13 @@
   <div class="">
     <van-nav-bar
       :title="title"
-      left-text="返回"
-      right-text="刷新"
       left-arrow
       :fixed="true"
       @click-left="onClickLeft"
       @click-right="onClickRight"
-    />
+    >
+      <van-icon name="replay" slot="right" />
+    </van-nav-bar>
   </div>
 </template>
 
