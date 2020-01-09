@@ -3,14 +3,17 @@
     <van-nav-bar
       :title="title"
       left-text="返回"
+      right-text="刷新"
       left-arrow
       :fixed="true"
       @click-left="onClickLeft"
       @click-right="onClickRight"
     />
     <transition name="van-fade">
-      <router-view></router-view>
+      <router-view v-if="isRefresh"></router-view>
     </transition>
+    
+    <bottom-nav></bottom-nav>
   </div>
 </template>
 
@@ -23,7 +26,8 @@ export default {
   name: 'bg',
   data () {
     return {
-      title: ''
+      title: '',
+      isRefresh: true
     }
   },
   watch: {
@@ -41,7 +45,13 @@ export default {
       this.$router.go(-1)
     },
     onClickRight() {
-      Toast('按钮');
+      this.reload()
+    },
+    reload () {
+      this.isRefresh = false
+      this.$nextTick(() => {
+        this.isRefresh = true
+      })
     }
   }
 }

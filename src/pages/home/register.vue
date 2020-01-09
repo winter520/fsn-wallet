@@ -13,8 +13,10 @@
         </li>
       </ul>
       <div class="WW100 mt-30" v-if="walletJSON.length > 0">
+      <!-- <div class="WW100 mt-30"> -->
         <textarea class="input-text WW100 font12" style="height:300px;" v-model="walletJSON" readonly id="copyTxtId"></textarea>
-        <van-button type="primary" class="WW100" @click="copyTxt('copyTxtId')">复制</van-button>
+        <p class="flex-c font14 color_red mb-20">请保存好Keystore，如有遗失将无法找回</p>
+        <van-button type="primary" class="WW100" @click="saveKeystoreAndEnter">复制并进入钱包</van-button>
       </div>
     </div>
   </div>
@@ -41,11 +43,12 @@ export default {
   data () {
     return {
       password: '',
-      walletJSON: ''
+      walletJSON: '',
+      address: ''
     }
   },
   mounted () {
-
+    console.log(localStorage.getItem('keystoreArr'))
   },
   methods: {
     changePwd () {
@@ -58,14 +61,23 @@ export default {
           n: 8192
         })
         this.walletJSON = JSON.stringify(jsonStr)
+        this.address = walletInit.getChecksumAddressString()
         this.$notify({ type: 'success', message: '创建成功！' })
       }
     },
-    copyTxt (id) {
-      document.getElementById(id).select()
-      document.execCommand("Copy")
-      this.$notify({ type: 'success', message: '复制成功！' })
-    }
+    saveKeystoreAndEnter () {
+      this.$store.commit('setAddress', {info: this.address})
+      this.$store.commit('setKeystoreObj', {
+        key: this.address,
+        value: this.walletJSON
+      })
+      this.toUrl('/')
+    },
+    // copyTxt (id) {
+    //   document.getElementById(id).select()
+    //   document.execCommand("Copy")
+    //   this.$notify({ type: 'success', message: '复制成功！' })
+    // }
   }
 }
 </script>

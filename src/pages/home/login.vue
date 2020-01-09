@@ -88,7 +88,7 @@ export default {
       let fileName = event.target.files[0].name
       reader.onload = onLoadEvent => {
         this.fileData = onLoadEvent.currentTarget.result
-        this.showPwd = this.$$.wallet.walletRequirePass(this.fileData)
+        this.showPwd = this.$$.walletRequirePass(this.fileData)
         if (this.showPwd) {
           this.fileName = fileName
         } else {
@@ -99,21 +99,31 @@ export default {
       this.password = ''
     },
     inputFile () {
-      let walletInfo = this.$$.wallet.getWalletFromPrivKeyFile(
+      let walletInfo = this.$$.getWalletFromPrivKeyFile(
         this.fileData,
         this.password
       )
-      console.log(walletInfo.getPrivateKeyString())
-      console.log(walletInfo.getChecksumAddressString())
+      // console.log(walletInfo.getPrivateKeyString())
+      // console.log(walletInfo.getChecksumAddressString())
       this.$store.commit('setKeystore', {info: this.fileData})
-      this.$store.commit('setAddress', {info: walletInfo.getChecksumAddressString()})
-      this.toUrl('/')
+      this.inputEnd(walletInfo)
     },
     inputPrivateKey () {
       let walletInfo = new this.$$.wallet(new Buffer(this.$$.fixPkey(this.privateKey), "hex"))
-      this.$store.commit('setAddress', {info: walletInfo.getChecksumAddressString()})
-      this.toUrl('/')
+      this.inputEnd(walletInfo)
       // console.log(walletInfo.toJSON())
+    },
+    inputEnd (walletInfo) {
+      this.$store.commit('setAddress', {info: walletInfo.getChecksumAddressString()})
+      let address = walletInfo.getChecksumAddressString()
+      let ksObj = this.$store.state.keystoreObj
+      if (!ksObj[address]) {
+        this.$store.commit('setKeystoreObj', {
+          key: address,
+          value: this.fileData ? this.fileData : 0
+        })
+      }
+      this.toUrl('/')
     }
   }
 }

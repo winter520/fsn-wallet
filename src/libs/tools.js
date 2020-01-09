@@ -170,5 +170,20 @@ export default {
     if (!str) return
     str = str.substr(0, 1).toUpperCase()
     return str
+  },
+  walletRequirePass (ethjson) {
+    var jsonArr;
+    try {
+      jsonArr = JSON.parse(ethjson);
+    } catch (err) {
+      throw 'Keystore error!';
+    }
+    if (jsonArr.encseed != null) return true;
+    else if (jsonArr.Crypto != null || jsonArr.crypto != null) return true
+    else if (jsonArr.hash != null && jsonArr.locked) return true;
+    else if (jsonArr.hash != null && !jsonArr.locked) return false;
+    else if (jsonArr.publisher == config.AppName && !jsonArr.encrypted) return false;
+    else
+      throw 'Keystore error!';
   }
 }

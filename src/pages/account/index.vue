@@ -13,7 +13,9 @@
             </li>
             <li class="WW50 item flex-sc">
               <span>余额：</span>
-              <span>{{$$.thousandBit($$.web3.fromWei(balanceData[fsnId], 'ether'), 8)}}</span>
+              <!-- <span>{{$$.thousandBit($$.web3.utils.fromWei(fsnBalance, 'ether'), 8)}}</span> -->
+              <!-- <span>{{$$.web3.utils.fromWei(fsnBalance, 'ether')}}</span> -->
+              <span>{{$$.thousandBit(fsnBalance, 8)}}</span>
             </li>
             <li class="WW100 item flex-sc font12">
               <span>地址：</span>
@@ -39,7 +41,7 @@
                 </p>
                 <div class="flex-bc">
                   <p class="WW50 flex-sc"><span class="label">ID：</span>{{$$.cutOut(index, 8, 6)}}</p>
-                  <p class="WW50 flex-sc"><span class="label">余额：</span>{{$$.thousandBit($$.web3.fromWei(item, 'ether'), 3)}}</p>
+                  <p class="WW50 flex-sc"><span class="label">余额：</span>{{$$.thousandBit($$.web3.utils.fromWei(item.toString(), 'ether'), 3)}}</p>
                 </div>
               </li>
             </ul>
@@ -51,7 +53,7 @@
             <ul class="list-box">
               <li v-for="(item, index) in timelockData" :key="index" class="item">
                 <p class="flex-sc">
-                  <span class="label">AMOUNT：</span>{{$$.thousandBit($$.web3.fromWei(item.Value, 'ether'), 3)}}
+                  <span class="label">AMOUNT：</span>{{$$.thousandBit($$.web3.utils.fromWei(item.Value.toString(), 'ether'), 3)}}
                 </p>
                 <div class="flex-bc">
                   <p class="WW50 flex-sc"><span class="label">FROM：</span>{{$$.timeChange({date: item.StartTime, type: 'yyyy-mm-dd', format: '-'})}}</p>
@@ -65,6 +67,7 @@
         </van-tab>
       </van-tabs>
     </div>
+    <bottom-nav active="1"></bottom-nav>
   </div>
 </template>
 
@@ -95,6 +98,7 @@
 </style>
 
 <script>
+import { Transaction } from 'ethereumjs-tx'
 export default {
   name: 'account',
   data () {
@@ -102,6 +106,7 @@ export default {
       loading: false,
       finished: false,
       activeName: 'a',
+      fsnBalance: 0,
       balanceData: [],
       timelockData: [],
       addrNode: 0,
@@ -118,24 +123,12 @@ export default {
     }
   },
   mounted () {
-    setTimeout(() => {
+    // console.log(this.$$.web3)
+    this.$$.isConnected().then(res => {
       this.initData()
-    }, 300)
-    // console.log(this.$$.web3.fsntx.buildSendAssetTx({
-    //   from: '0xAa5dCD8d7644F9de310211d1211221a2BCF19D9D',
-    //   to: '0xE000E632124aa65B80f74E3e4cc06DC761610583',
-    //   value: '1000',
-    //   asset: '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
-    // }))
-    // console.log(this.$$.web3.fsn.sendAsset({
-    //   from: '0xE000E632124aa65B80f74E3e4cc06DC761610583',
-    //   gas: "0x15f90",
-    //   gasPrice: '0x3b9aca00',
-    //   nonce: '0x0',
-    //   asset: '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
-    //   to: '0x91db50F5c36aE7616009d4e94462DcA4D4c7e833',
-    //   value: '0x1',
-    // }, '123456'))
+    }).catch(err => {
+      this.$notify('节点连接失败！')
+    })
   },
   methods: {
     close () {
@@ -144,14 +137,38 @@ export default {
       this.$router.push('/enter')
     },
     initData () {
-      this.balanceData = this.$$.web3.fsn.getAllBalances( this.address, 'latest')
-      this.timelockData = this.$$.web3.fsn.getAllTimeLockBalances(this.address, 'latest')
-      this.timelockData = this.timelockData[this.fsnId] && this.timelockData[this.fsnId].Items ? this.timelockData[this.fsnId].Items : []
-      // console.log(this.balanceData)
-      // console.log(this.timelockData)
-      this.addrNode = this.$$.web3.fsn.getNotation(this.address, 'latest')
-      this.loading = true
-      this.finished = true
+      const batch = new this.$$.web3.BatchRequest()
+
+      batch.add(this.$$.web3.fsn.getAllBalances.request( this.address, 'latest', (err, res) => {
+        if (err) {
+          this.balanceData = 0
+          this.fsnBalance = 0
+        } else {
+          this.balanceData = res
+          this.fsnBalance = this.$$.web3.utils.fromWei(res[this.fsnId], 'ether')
+        }
+      }))
+      batch.add(this.$$.web3.fsn.getAllTimeLockBalances.request(this.address, 'latest', (err, res) => {
+        if (err) {
+          console.log(err)
+          this.timelockData = []
+        } else {
+          this.timelockData = res
+          this.timelockData = this.timelockData[this.fsnId] && this.timelockData[this.fsnId].Items ? this.timelockData[this.fsnId].Items : []
+        }
+      }))
+      batch.add(this.$$.web3.fsn.getNotation.request(this.address, 'latest', (err, res) => {
+        if (err) {
+          console.log(err)
+          this.addrNode = ''
+        } else {
+          this.addrNode = res
+        }
+        this.loading = true
+        this.finished = true
+      }))
+
+      batch.execute()
     },
     formatAddr (addr) {
       let name = ''

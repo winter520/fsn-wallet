@@ -1,4 +1,4 @@
-const Bg = resolve => require.ensure([], () => resolve(require('@c/bg/index')) )
+const Main = resolve => require.ensure([], () => resolve(require('@c/main/index')) )
 
 export default [
   {
@@ -11,7 +11,7 @@ export default [
   },
   {
     path: '/login',
-    component: Bg,
+    component: Main,
     meta: {
       notCache: true
     },
@@ -28,7 +28,7 @@ export default [
   },
   {
     path: '/register',
-    component: Bg,
+    component: Main,
     meta: {
       notCache: true
     },
@@ -45,7 +45,7 @@ export default [
   },
   {
     path: '/send',
-    component: Bg,
+    component: Main,
     meta: {
       notCache: true
     },
@@ -57,6 +57,24 @@ export default [
           notCache: true
         },
         component: resolve => require.ensure([], () => resolve(require('@/pages/account/send.vue')) ),
+      }
+    ]
+  },
+  
+  {
+    path: '/person',
+    component: resolve => require.ensure([], () => resolve(require('@/pages/person/index.vue')) ),
+    meta: {
+      notCache: true
+    },
+    children: [
+      {
+        path: '/',
+        meta: {
+          title: '个人中心',
+          notCache: true
+        },
+        component: resolve => require.ensure([], () => resolve(require('@/pages/person/person.vue')) ),
       }
     ]
   },

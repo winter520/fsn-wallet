@@ -11,7 +11,7 @@
           <div class="input-box">
             <input type="text" v-model="formData.to" class="input-text HH100 WW100 font14">
           </div>
-          <span class="flex-sc font12 color_99">余额：{{$$.web3.fromWei(balance, 'ether')}}</span>
+          <span class="flex-sc font12 color_99">余额：{{balance}}</span>
         </li>
         <!-- <li class="item">
           <label class="label">YOU SEND:</label>
@@ -25,7 +25,7 @@
             <input type="number" v-model="formData.value" class="input-text HH100 WW100">
           </div>
         </li>
-        <!-- <li class="item">
+        <li class="item">
           <label class="label">时间锁:</label>
           <div class="WW100">
             <van-tabs v-model="activeName" sticky class="bgContent" @click="tabChangeTime">
@@ -49,7 +49,7 @@
               </van-tab>
             </van-tabs>
           </div>
-        </li> -->
+        </li>
         <li class="item mt-30">
           <van-button type="info" @click="openPwd" class="WW100" :disabled="false">发送</van-button>
         </li>
@@ -59,7 +59,7 @@
       <van-datetime-picker type="date" @confirm="changeTime" @cancel="prop.startTime = false" :min-date="nowDate"/>
     </van-popup>
     <van-popup v-model="prop.endTime" position="bottom">
-      <van-datetime-picker type="date" @confirm="changeTime" @cancel="prop.endTime = false" :min-date="new Date(formData.startTime)"/>
+      <van-datetime-picker type="date" @confirm="changeTime" @cancel="prop.endTime = false" :min-date="new Date(formData.startTime ? formData.startTime : Date.now())"/>
     </van-popup>
     <van-popup v-model="prop.beginTime" position="bottom">
       <van-datetime-picker type="date" @confirm="changeTime" @cancel="prop.beginTime = false" :min-date="nowDate"/>
@@ -134,15 +134,17 @@
 </style>
 
 <script>
-// import Tx from 'ethereumjs-tx'
-// let Tx = require('ethereumjs-tx')
-// console.log(Tx)
+let Tx = require('ethereumjs-tx')
+
 export default {
   name: 'send',
   data () {
     return {
       activeName: 'a',
-      formData: {},
+      formData: {
+        to: '0x68Cd06979ae3De5B718019e0fE9A40F231dFE263',
+        value: 0.1
+      },
       balance: 0,
       formTimeKey: '',
       nowDate: new Date(),
@@ -155,7 +157,8 @@ export default {
       },
       privateKey: '',
       password: '',
-      signTx: ''
+      signTx: '',
+      fsnId: '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
     }
   },
   computed: {
@@ -168,20 +171,13 @@ export default {
   },
   mounted () {
     this.formData.id = this.$route.query.id
-    setTimeout(() => {
-      this.balance = this.$$.web3.fsn.getBalance('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff', this.address, 'latest')
-      // console.log(this.$$.web3.fsn.getBalance('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff', this.address, 'latest'))
-    }, 200)
-
-    // console.log(this.$$.web3.fsntx.buildSendAssetTx({
-    //   from: this.address,
-    //   to: '0xc1117600747c820751476c4d2ec78cca9bbebf6d',
-    //   value: '10',
-    //   asset: '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
-    // }))
-    // console.log(this.$$.web3.fsn.getNotation("0x89fa3626bd0ae6e86d558a866f6044790ace8fd2", 'latest'))
-    // console.log(this.$$.web3.fsn.getNotation(this.address, 'latest'))
-    // console.log(this.$$.web3.isConnected())
+    this.$$.isConnected().then(res => {
+      this.$$.web3.fsn.getBalance(this.fsnId, this.address, 'latest').then(res => {
+        this.balance = this.$$.web3.utils.fromWei(res, 'ether')
+      })
+    }).catch(err => {
+      this.$notify('节点连接失败！')
+    })
   },
   methods: {
     cancel () {
@@ -210,7 +206,8 @@ export default {
     getBaseData () {
       return new Promise((resolve, reject) => {
         let web3 = this.$$.web3
-        let batch = web3.createBatch()
+        // let batch = web3.createBatch()
+        const batch = new web3.BatchRequest()
         batch.add(web3.eth.getGasPrice.request())
         batch.add(web3.eth.estimateGas.request({to: this.formData.to, data: this.formData.id}))
         batch.add(web3.eth.getTransactionCount.request(this.address, 'pending'))
@@ -231,6 +228,7 @@ export default {
             }
             if (res[2].result || res[2].result === 0) {
               data.nonce = parseInt(res[2].result)
+              console.log(web3.utils.hexToNumberString(res[2].result))
             } else {
               reject(res[2].error.message)
             }
@@ -241,7 +239,7 @@ export default {
     },
     openPwd () {
       this.formData.to = this.formData.to.replace(/\s/, '')
-      if (!this.$$.web3.isAddress(this.formData.to)) {
+      if (!this.$$.web3.utils.isAddress(this.formData.to)) {
         this.$notify('地址不正确')
         return
       }
@@ -256,21 +254,21 @@ export default {
       this.prop.pwd = true
     },
     toSign () {
-      // console.log(this.$$.getCookie('keystore'))
       let fileData = this.keystore
       if (!fileData && !this.privateKey) {
         this.$notify('登陆超时请重新登陆！')
         return
       }
+
       try {
         let prvtKey
         let walletInfo
         if (fileData) {
-          walletInfo = this.$$.wallet.getWalletFromPrivKeyFile(
+          walletInfo = this.$$.getWalletFromPrivKeyFile(
             fileData,
             this.password
           )
-          prvtKey = walletInfo.getPrivateKeyString()
+          this.privateKey = prvtKey = walletInfo.getPrivateKeyString()
           prvtKey = new Buffer(this.$$.fixPkey(prvtKey), 'hex')
         } else {
           prvtKey = new Buffer(this.$$.fixPkey(this.privateKey), 'hex')
@@ -280,32 +278,93 @@ export default {
           this.$notify('账户错误！')
           return
         }
-        this.getBaseData().then(res => {
-          // console.log(res)
-          let rawTx = res
-          rawTx.from = this.address
-          rawTx.to = this.formData.to.replace(/\s/, '')
-          rawTx.value = this.$$.web3.toWei(this.formData.value, 'ether')
-          // rawTx.value = '0x' + this.formData.value.toString('hex')
-          rawTx.value = Number(rawTx.value)
-          console.log(rawTx)
-          let Tx = require('ethereumjs-tx')
-          let tx = new Tx(rawTx)
-          tx.sign(prvtKey)
-          this.signTx = tx.serialize().toString("hex")
-          this.signTx = this.signTx.indexOf("0x") === 0 ? this.signTx : ("0x" + this.signTx)
-          this.prop.confirm = true
-          // console.log(this.signTx)
-        }).catch(err => {
-          console.log(err)
-          this.$notify(err.toString())
-        })
+        if (this.activeName === 'a') {
+          this.AssetToAssetSign(prvtKey)
+        } else if (this.activeName === 'b') {
+          this.AssetToTimeLockSign(prvtKey)
+        }
       } catch (error) {
         console.log(error)
       }
     },
+    AssetToAssetSign (pwd) {
+      let rawTx = {
+        from: this.address,
+        to: this.formData.to.replace(/\s/, ''),
+        value: this.$$.web3.utils.toHex(this.$$.web3.utils.toWei(this.formData.value.toString(), 'ether')),
+      }
+      this.$$.web3.fsntx.buildSendAssetTx({
+        ...rawTx,
+        asset: this.fsnId
+      }).then(res => {
+        console.log(res)
+        res.chainId = this.$$.web3.utils.toHex('46688')
+        res.from = this.address
+        console.log(res)
+        let tx = new Tx(res)
+        tx.sign(pwd)
+        this.signTx = tx.serialize().toString("hex")
+        this.signTx = this.signTx.indexOf("0x") === 0 ? this.signTx : ("0x" + this.signTx)
+        this.prop.confirm = true
+        console.log(this.signTx)
+      })
+    },
+    AssetToTimeLockSign (pwd) {
+      let rawTx = {
+        from: this.address,
+        to: this.formData.to.replace(/\s/, ''),
+        value: this.$$.web3.utils.toHex(this.$$.web3.utils.toWei(this.formData.value.toString(), 'ether')),
+      }
+      let rawTx2 = {
+        start: this.$$.web3.utils.toHex(Date.parse(this.formData.startTime)),
+        end: this.$$.web3.utils.toHex(Date.parse(this.formData.endTime)),
+        asset: this.fsnId,
+      }
+      console.log(rawTx2)
+      this.$$.web3.fsntx.buildAssetToTimeLockTx({
+        ...rawTx,
+        ...rawTx2
+      }).then(rawTx => {
+        rawTx.chainId = this.$$.web3.utils.toHex('46688')
+        rawTx.from = this.address
+        console.log(rawTx)
+        let tx = new Tx(rawTx)
+        tx.sign(pwd)
+        this.signTx = tx.serialize().toString("hex")
+        this.signTx = this.signTx.indexOf("0x") === 0 ? this.signTx : ("0x" + this.signTx)
+        this.prop.confirm = true
+        console.log(this.signTx)
+      })
+    },
+    TimeLockToTimeLockSign () {
+      let rawTx = {
+        from: this.address,
+        to: this.formData.to.replace(/\s/, ''),
+        value: this.$$.web3.utils.toHex(this.$$.web3.utils.toWei(this.formData.value.toString(), 'ether')),
+      }
+      let rawTx2 = {
+        start: this.$$.web3.utils.toHex(Date.parse(this.formData.startTime)),
+        end: this.$$.web3.utils.toHex(Date.parse(this.formData.endTime)),
+        asset: this.fsnId,
+      }
+      console.log(rawTx2)
+      this.$$.web3.fsntx.buildTimeLockToTimeLockTx({
+        ...rawTx,
+        ...rawTx2
+      }).then(rawTx => {
+        rawTx.chainId = this.$$.web3.utils.toHex('46688')
+        rawTx.from = this.address
+        console.log(rawTx)
+        let tx = new Tx(rawTx)
+        tx.sign(pwd)
+        this.signTx = tx.serialize().toString("hex")
+        this.signTx = this.signTx.indexOf("0x") === 0 ? this.signTx : ("0x" + this.signTx)
+        this.prop.confirm = true
+        console.log(this.signTx)
+      })
+    },
     sendTxns () {
-      this.$$.web3.eth.sendRawTransaction(this.signTx, (err, hash) => {
+      this.$$.web3.eth.sendSignedTransaction(this.signTx, (err, hash) => {
         if (err) {
           this.$notify(err.toString())
         } else {

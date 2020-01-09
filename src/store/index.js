@@ -5,17 +5,22 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
+let ksArr = {}
+if (localStorage.getItem('keystoreObj')) {
+  ksArr = JSON.parse(localStorage.getItem('keystoreObj'))
+} 
+
 const store = new Vuex.Store({
   state: {
     address: localStorage.getItem('address') ? localStorage.getItem('address') : '',
-    keystore: localStorage.getItem('keystore') ? localStorage.getItem('keystore') : ''
+    keystore: localStorage.getItem('keystore') ? localStorage.getItem('keystore') : '',
+    keystoreObj: ksArr,
   },
   mutations: {
     setAddress (state, data) {
       let info = data.info ? data.info : ''
       state.address = info
       if (!data.type) {
-        // cookie.setCookie('address', info)
         localStorage.setItem('address', info)
       }
     },
@@ -23,8 +28,13 @@ const store = new Vuex.Store({
       let info = data.info ? data.info : ''
       state.keystore = info
       if (!data.type) {
-        // cookie.setCookie('keystore', info)
         localStorage.setItem('keystore', info)
+      }
+    },
+    setKeystoreObj (state, data) {
+      state.keystoreObj[data.key] = data.value
+      if (!data.type) {
+        localStorage.setItem('keystoreObj', JSON.stringify(state.keystoreObj))
       }
     },
   },

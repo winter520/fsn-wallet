@@ -6,6 +6,7 @@ import router from './router'
 import store from './store'
 
 import './assets/css/css.css'
+import './assets/css/style.css'
 
 import $$ from '@/libs/$$.js'
 
@@ -21,7 +22,9 @@ import {
   CellGroup,
   DatetimePicker,
   Popup,
-  Icon
+  Icon,
+  Tabbar,
+  TabbarItem
 } from 'vant'
 
 Vue.use(Button)
@@ -36,6 +39,7 @@ Vue.use(CellGroup)
 Vue.use(DatetimePicker)
 Vue.use(Popup)
 Vue.use(Icon)
+Vue.use(Tabbar).use(TabbarItem)
 
 
 Vue.use(Vuex)
@@ -46,6 +50,10 @@ Vue.prototype.$$ = $$
 Vue.prototype.toUrl = function(url, params) {
   this.$router.push({path: url, query: params})
 }
+
+import BottomNav from '@c/bottomnav/index'
+// console.log(bottomnav)
+Vue.component('BottomNav', BottomNav)
 
 new Vue({
   router,
