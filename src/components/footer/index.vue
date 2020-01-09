@@ -15,24 +15,26 @@
 
 <script>
 export default {
-  name: 'bottomNav',
-  props: {
-    active: {
-      type: String,
-      default: ''
-    }
-  },
+  name: 'footerNav',
   data () {
     return {
       nowNav: ''
     }
   },
+  watch: {
+    '$route' (cur) {
+      this.changePath()
+    }
+  },
   mounted () {
-    console.log(this.$route)
-    this.nowNav = this.active
-    // this.changePath()
+    this.changePath()
   },
   methods: {
+    changePath () {
+      // console.log(this.$route)
+      let navCur = this.$route.meta.navBtmCur
+      this.nowNav = navCur
+    }
   }
 }
 </script>

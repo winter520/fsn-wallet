@@ -5,9 +5,12 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
-let ksArr = {}
+let ksArr = {}, addressObj = {}
 if (localStorage.getItem('keystoreObj')) {
   ksArr = JSON.parse(localStorage.getItem('keystoreObj'))
+}
+if (localStorage.getItem('addressObj')) {
+  addressObj = JSON.parse(localStorage.getItem('addressObj'))
 } 
 
 const store = new Vuex.Store({
@@ -15,6 +18,7 @@ const store = new Vuex.Store({
     address: localStorage.getItem('address') ? localStorage.getItem('address') : '',
     keystore: localStorage.getItem('keystore') ? localStorage.getItem('keystore') : '',
     keystoreObj: ksArr,
+    addressObj: addressObj
   },
   mutations: {
     setAddress (state, data) {
@@ -37,21 +41,26 @@ const store = new Vuex.Store({
         localStorage.setItem('keystoreObj', JSON.stringify(state.keystoreObj))
       }
     },
+    setRemoveKeystore (state, data) {
+      delete state.keystoreObj[data]
+      if (!data.type) {
+        localStorage.setItem('keystoreObj', JSON.stringify(state.keystoreObj))
+      }
+    },
+    setAddressObj (state, data) {
+      console.log(data)
+      state.addressObj[data.key] = data.value ? data.value : data.key
+      if (!data.type) {
+        localStorage.setItem('addressObj', JSON.stringify(state.addressObj))
+      }
+    },
+    setRemoveAddress (state, data) {
+      delete state.addressObj[data]
+      if (!data.type) {
+        localStorage.setItem('addressObj', JSON.stringify(state.addressObj))
+      }
+    },
   },
-  actions: {
-    // getAddress ({commit}) {
-    //   // console.log(cookie.getCookie('address'))
-    //   // let data = { type: 1, info: cookie.getCookie('address')}
-    //   let data = { type: 1, info: localStorage.getItem('address')}
-    //   commit('setAddress', data)
-    // },
-    // getKeystore ({commit}) {
-    //   // console.log(cookie.getCookie('keystore'))
-    //   // let data = { type: 1, info: cookie.getCookie('keystore')}
-    //   let data = { type: 1, info: localStorage.getItem('keystore')}
-    //   commit('setKeystore', data)
-    // }
-  }
 })
 
 export default store

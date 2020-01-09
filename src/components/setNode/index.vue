@@ -36,9 +36,9 @@ export default {
     }
   },
   mounted () {
-    setTimeout(() => {
-      this.changNet()
-    }, 200)
+    // setTimeout(() => {
+    //   this.changNet()
+    // }, 200)
   },
   methods: {
     changNet () {

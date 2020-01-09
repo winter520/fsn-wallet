@@ -24,7 +24,9 @@ import {
   Popup,
   Icon,
   Tabbar,
-  TabbarItem
+  TabbarItem,
+  Dialog,
+  SwipeCell
 } from 'vant'
 
 Vue.use(Button)
@@ -39,7 +41,10 @@ Vue.use(CellGroup)
 Vue.use(DatetimePicker)
 Vue.use(Popup)
 Vue.use(Icon)
-Vue.use(Tabbar).use(TabbarItem)
+Vue.use(Tabbar)
+Vue.use(TabbarItem)
+Vue.use(Dialog)
+Vue.use(SwipeCell)
 
 
 Vue.use(Vuex)
@@ -51,9 +56,11 @@ Vue.prototype.toUrl = function(url, params) {
   this.$router.push({path: url, query: params})
 }
 
-import BottomNav from '@c/bottomnav/index'
-// console.log(bottomnav)
-Vue.component('BottomNav', BottomNav)
+import headerNav from '@c/header/index'
+import footerNav from '@c/footer/index'
+
+Vue.component('headerNav', headerNav)
+Vue.component('footerNav', footerNav)
 
 new Vue({
   router,

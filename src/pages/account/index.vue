@@ -4,7 +4,7 @@
       <div class="top-bg">
         <h5 class="text-l color_ff">FUSION (FSN)</h5>
         <!-- <van-icon name="cross" class="close"/> -->
-        <span class="close" @click="close">退出</span>
+        <span class="close" @click="popup.account = true">切换账户</span>
         <div class="info">
           <ul class="flex-bc flex-wrap">
             <li class="WW50 item flex-sc">
@@ -67,7 +67,11 @@
         </van-tab>
       </van-tabs>
     </div>
-    <bottom-nav active="1"></bottom-nav>
+
+
+    <van-popup v-model="popup.account" close-icon-position="top-left" position="left" :style="{ width: '60%', height: '100%' }" >
+      <wallet-account @on-wallet="changeAccount"></wallet-account>
+    </van-popup>
   </div>
 </template>
 
@@ -98,7 +102,7 @@
 </style>
 
 <script>
-import { Transaction } from 'ethereumjs-tx'
+import walletAccount from '@c/account/index.vue'
 export default {
   name: 'account',
   data () {
@@ -111,9 +115,13 @@ export default {
       timelockData: [],
       addrNode: 0,
       fsnId: '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
-      network: localStorage.getItem('network')
+      network: localStorage.getItem('network'),
+      popup: {
+        account: false
+      }
     }
   },
+  components: {walletAccount},
   computed: {
     address () {
       return this.$store.state.address
@@ -131,10 +139,11 @@ export default {
     })
   },
   methods: {
-    close () {
-      this.$store.commit('setKeystore', {info: ''})
-      this.$store.commit('setAddress', {info: ''})
-      this.$router.push('/enter')
+    changeAccount (data) {
+      this.$store.commit('setKeystore', {info: data.ks})
+      this.$store.commit('setAddress', {info: data.address})
+      this.initData()
+      this.popup.account = false
     },
     initData () {
       const batch = new this.$$.web3.BatchRequest()

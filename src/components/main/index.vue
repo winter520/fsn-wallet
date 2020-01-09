@@ -1,19 +1,12 @@
 <template>
-  <div class="bgContent" style="padding-top:46px;">
-    <van-nav-bar
-      :title="title"
-      left-text="返回"
-      right-text="刷新"
-      left-arrow
-      :fixed="true"
-      @click-left="onClickLeft"
-      @click-right="onClickRight"
-    />
+  <div class="bgContent" :style="(showHdOrBtn == 1 || showHdOrBtn == 2 ? 'padding-top:46px;' : '') + (showHdOrBtn == 1 || showHdOrBtn == 3 ? 'padding-bottom:50px;' : '')">
+    <header-nav @on-refresh="reload" v-if="showHdOrBtn == 1 || showHdOrBtn == 2"></header-nav>
+
     <transition name="van-fade">
       <router-view v-if="isRefresh"></router-view>
     </transition>
     
-    <bottom-nav></bottom-nav>
+    <footer-nav v-if="showHdOrBtn == 1 || showHdOrBtn == 3"></footer-nav>
   </div>
 </template>
 
@@ -26,32 +19,30 @@ export default {
   name: 'bg',
   data () {
     return {
-      title: '',
-      isRefresh: true
+      isRefresh: true,
+      showHdOrBtn: 1
     }
   },
   watch: {
     '$route' (cur) {
-      console.log(cur)
-      this.title = cur.meta.title
+      this.changePath()
     }
   },
   mounted () {
-    console.log(this.$route)
-    this.title = this.$route.meta.title
+    this.changePath()
   },
   methods: {
-    onClickLeft() {
-      this.$router.go(-1)
-    },
-    onClickRight() {
-      this.reload()
-    },
     reload () {
       this.isRefresh = false
       this.$nextTick(() => {
         this.isRefresh = true
       })
+    },
+    changePath () {
+      console.log(this.$route)
+      let showHdOrBtn = this.$route.meta.showHdOrBtn
+      console.log(Number(showHdOrBtn))
+      this.showHdOrBtn = Number(showHdOrBtn)
     }
   }
 }
