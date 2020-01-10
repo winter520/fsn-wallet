@@ -4,7 +4,7 @@
       <div class="top-bg">
         <h5 class="text-l color_ff">FUSION (FSN)</h5>
         <!-- <van-icon name="cross" class="close"/> -->
-        <span class="close flex-c" @click="popup.account = true"><van-icon name="exchange" />切换账户</span>
+        <span class="close flex-c font12" @click="popup.account = true"><van-icon name="exchange" class="font14" />切换账户</span>
         <div class="info">
           <ul class="flex-bc flex-wrap">
             <li class="WW50 item flex-sc">

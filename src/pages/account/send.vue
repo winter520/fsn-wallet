@@ -66,25 +66,7 @@
     </van-popup>
 
     <van-popup v-model="prop.pwd" position="bottom">
-      <div class="form-box HH100 pt-30">
-        <ul class="ul">
-          <li class="item" v-if="keystore">
-            <label class="label">密码:</label>
-            <div class="input-box">
-              <input type="password" v-model="password" class="input-text HH100 WW100">
-            </div>
-          </li>
-          <li class="item" v-if="!keystore">
-            <label class="label">私钥:</label>
-            <div class="input-box">
-              <input type="password" v-model="privateKey" class="input-text HH100 WW100">
-            </div>
-          </li>
-          <li class="item">
-            <van-button type="info" @click="toSign" class="WW100" :disabled="password.length <= 0 && privateKey.length <= 0">解锁</van-button>
-          </li>
-        </ul>
-      </div>
+      <unlock :keystore="keystore" :address="address" @setPrviKey="toSign"></unlock>
     </van-popup>
 
     <van-popup v-model="prop.confirm" :close-on-click-overlay="false">
@@ -135,7 +117,6 @@
 
 <script>
 let Tx = require('ethereumjs-tx')
-
 export default {
   name: 'send',
   data () {
@@ -253,38 +234,20 @@ export default {
       }
       this.prop.pwd = true
     },
-    toSign () {
+    toSign (data) {
       let fileData = this.keystore
       if (!fileData && !this.privateKey) {
         this.$notify('登陆超时请重新登陆！')
         return
       }
-
-      try {
-        let prvtKey
-        let walletInfo
-        if (fileData) {
-          walletInfo = this.$$.getWalletFromPrivKeyFile(
-            fileData,
-            this.password
-          )
-          this.privateKey = prvtKey = walletInfo.getPrivateKeyString()
-          prvtKey = new Buffer(this.$$.fixPkey(prvtKey), 'hex')
-        } else {
-          prvtKey = new Buffer(this.$$.fixPkey(this.privateKey), 'hex')
-          walletInfo = new this.$$.wallet(prvtKey)
-        }
-        if (this.address.toString() !== walletInfo.getChecksumAddressString().toString()) {
-          this.$notify('账户错误！')
-          return
-        }
+      if (data.state) {
         if (this.activeName === 'a') {
-          this.AssetToAssetSign(prvtKey)
+          this.AssetToAssetSign(data.info)
         } else if (this.activeName === 'b') {
-          this.AssetToTimeLockSign(prvtKey)
+          this.AssetToTimeLockSign(data.info)
         }
-      } catch (error) {
-        console.log(error)
+      } else {
+        this.$notify(data.info)
       }
     },
     AssetToAssetSign (pwd) {

@@ -26,7 +26,9 @@ import {
   Tabbar,
   TabbarItem,
   Dialog,
-  SwipeCell
+  SwipeCell,
+  NoticeBar,
+  PullRefresh
 } from 'vant'
 
 Vue.use(Button)
@@ -45,7 +47,8 @@ Vue.use(Tabbar)
 Vue.use(TabbarItem)
 Vue.use(Dialog)
 Vue.use(SwipeCell)
-
+Vue.use(NoticeBar)
+Vue.use(PullRefresh)
 
 Vue.use(Vuex)
 Vue.config.productionTip = false
@@ -58,9 +61,11 @@ Vue.prototype.toUrl = function(url, params) {
 
 import headerNav from '@c/header/index'
 import footerNav from '@c/footer/index'
+import unlock from '@c/unlock/index'
 
 Vue.component('headerNav', headerNav)
 Vue.component('footerNav', footerNav)
+Vue.component('unlock', unlock)
 
 new Vue({
   router,
