@@ -40,7 +40,7 @@ export default {
   },
   methods: {
     handleClick () {
-      if (!this.addressObj.address || !this.$$.web3.utils.checkAddressChecksum(this.addressObj.address)) {
+      if (!this.addressObj.address || !this.$$.web3.utils.isAddress(this.addressObj.address)) {
         this.$notify('地址错误，请重新填写！')
         return
       }

@@ -14,7 +14,7 @@
           <van-icon name="arrow" />
         </li>
         <li class="item flex-bc" @click="toUrl('/person/address')">
-          <span class="flex-c"><van-icon name="records" class="font18 mr-10" />地址管理</span>
+          <span class="flex-c"><van-icon name="location-o" class="font18 mr-10" />地址管理</span>
           <van-icon name="arrow" />
         </li>
         <li class="item flex-bc" @click="toUrl('/person/node')">

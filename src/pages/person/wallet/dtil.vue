@@ -2,7 +2,7 @@
   <div class="boxConntent1">
     <van-notice-bar
       text="请保存好Keystore，如有遗失将无法找回"
-      left-icon="volume-o"
+      left-icon="warn-o"
     />
     <div class="WW100 w-dtil-box">
       <textarea class="input-box" style="height:280px;" v-model="wDtil.ks" readonly id="copyKeystore"></textarea>

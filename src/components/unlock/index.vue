@@ -2,13 +2,13 @@
   <div class="form-box HH100 pt-30">
     <ul class="ul">
       <li class="item" v-if="keystore">
-        <label class="label">密码:</label>
+        <label class="label">密码:<span class="font12 color_99" style="font-weight:normal;">({{address}})</span></label>
         <div class="input-box">
           <input type="password" v-model="password" class="input-text HH100 WW100">
         </div>
       </li>
       <li class="item" v-if="!keystore">
-        <label class="label">私钥:</label>
+        <label class="label">私钥:<span class="font12 color_99" style="font-weight:normal;">({{address}})</span></label>
         <div class="input-box">
           <input type="password" v-model="privateKey" class="input-text HH100 WW100">
         </div>

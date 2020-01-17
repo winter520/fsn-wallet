@@ -8,8 +8,9 @@
       <ul class="ul">
         <li class="item">
           <label class="label">发送地址:</label>
-          <div class="input-box">
-            <input type="text" v-model="formData.to" class="input-text HH100 WW100 font14">
+          <div class="input-box relative">
+            <input type="text" v-model="formData.to" class="input-text HH100 WW100 pr-40">
+            <div class="down-arrow flex-c" @click="prop.address = true"><van-icon name="location-o" /></div>
           </div>
           <span class="flex-sc font12 color_99">余额：{{balance}}</span>
         </li>
@@ -34,17 +35,17 @@
               <van-tab title="时间段" name="b">
                 <div class="flex-bc H40 mt-30">
                   从
-                  <input type="text" v-model="formData.startTime" @click="prop.startTime = true; formTimeKey = 'startTime'" placeholder="选择开始时间" class="input-text HH100 WW45 font14 center" readonly>
+                  <input type="text" v-model="formData.startTime" @click="prop.startTime = true; formTimeKey = 'startTime'" placeholder="选择开始时间" class="input-text HH100 W120 font12 center" readonly>
                   到
-                  <input type="text" v-model="formData.endTime" @click="prop.endTime = true; formTimeKey = 'endTime'" placeholder="选择截止时间" class="input-text HH100 WW45 font14 center" readonly>
+                  <input type="text" v-model="formData.endTime" @click="prop.endTime = true; formTimeKey = 'endTime'" placeholder="选择截止时间" class="input-text HH100 W120 font12 center" readonly>
                 </div>
               </van-tab>
               <van-tab title="永远" name="c">
-                <div class="flex-bc H40 mt-30">
+                <div class="flex-bc H40 mt-30 WW100">
                   从
-                  <input type="text" v-model="formData.beginTime" @click="prop.beginTime = true; formTimeKey = 'beginTime'" placeholder="选择开始时间" class="input-text HH100 WW45 font14 center" readonly>
+                  <input type="text" v-model="formData.beginTime" @click="prop.beginTime = true; formTimeKey = 'beginTime'" placeholder="选择开始时间" class="input-text HH100 W120 font12 center" readonly>
                   到
-                  <input type="text" placeholder="选择截止时间" value="永远" class="input-text HH100 WW45 font14 center" readonly>
+                  <input type="text" placeholder="选择截止时间" value="永远" class="input-text HH100 W120 font12 center" readonly>
                 </div>
               </van-tab>
             </van-tabs>
@@ -55,20 +56,28 @@
         </li>
       </ul>
     </div>
+    <!-- 时间段 start -->
     <van-popup v-model="prop.startTime" position="bottom">
       <van-datetime-picker type="date" @confirm="changeTime" @cancel="prop.startTime = false" :min-date="nowDate"/>
     </van-popup>
     <van-popup v-model="prop.endTime" position="bottom">
       <van-datetime-picker type="date" @confirm="changeTime" @cancel="prop.endTime = false" :min-date="new Date(formData.startTime ? formData.startTime : Date.now())"/>
     </van-popup>
+    <!-- 时间段 end -->
+
+    <!-- 永远 start -->
     <van-popup v-model="prop.beginTime" position="bottom">
       <van-datetime-picker type="date" @confirm="changeTime" @cancel="prop.beginTime = false" :min-date="nowDate"/>
     </van-popup>
+    <!-- 永远 end -->
 
+    <!-- 签名 start -->
     <van-popup v-model="prop.pwd" position="bottom">
       <unlock :keystore="keystore" :address="address" @setPrviKey="toSign"></unlock>
     </van-popup>
+    <!-- 签名 end -->
 
+    <!-- 发送确认 start -->
     <van-popup v-model="prop.confirm" :close-on-click-overlay="false">
       <div class="confirm-box">
         <h3>发送确认</h3>
@@ -89,21 +98,25 @@
         </div>
       </div>
     </van-popup>
+    <!-- 发送确认 end -->
+
+    <!-- 选择地址 start -->
+    <van-popup v-model="prop.address" position="bottom">
+      <div class="confirm-box">
+        <ul class="ul">
+          <li class="item" v-for="(item, index) in addrList" :key="index" @click="selectAddr(index)">
+            <p>{{item}}:</p> <p>{{index}}</p>
+          </li>
+        </ul>
+      </div>
+    </van-popup>
+    <!-- 选择地址 end -->
   </div>
 </template>
 
 <style lang="scss">
-.form-box {
-  width: 100%;padding:0 15px;
-  .item {
-    width: 100%;margin-bottom:20px;
-    .label {
-      width: 100%;text-align: left;display: block;margin-bottom: 10px;font-size: 14px;font-weight: bold;
-    }
-    .input-box {
-      width: 100%;height: 40px;position: relative;
-    }
-  }
+.down-arrow {
+  width: 40px;height: 40px;position: absolute;top:0;right:0;border-left: 1px solid #ddd;
 }
 .confirm-box {
   padding: 15px 15px;
@@ -113,6 +126,7 @@
     }
   }
 }
+
 </style>
 
 <script>
@@ -123,8 +137,8 @@ export default {
     return {
       activeName: 'a',
       formData: {
-        to: '0x68Cd06979ae3De5B718019e0fE9A40F231dFE263',
-        value: 0.1
+        // to: '0x014DC8Fd1221AA87C800A2fF8dB60130b333D410',
+        // value: 0.1
       },
       balance: 0,
       formTimeKey: '',
@@ -134,12 +148,14 @@ export default {
         endTime: false,
         beginTime: false,
         pwd: false,
-        confirm: false
+        confirm: false,
+        address: false
       },
       privateKey: '',
       password: '',
       signTx: '',
-      fsnId: '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
+      fsnId: '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+      chainId: this.$$.web3.utils.toHex('46688')
     }
   },
   computed: {
@@ -148,6 +164,10 @@ export default {
     },
     keystore () {
       return this.$store.state.keystore
+    },
+    addrList () {
+      console.log(this.$store.state.addressObj)
+      return this.$store.state.addressObj
     }
   },
   mounted () {
@@ -171,6 +191,10 @@ export default {
       this.signTx = ''
       this.password = ''
       this.privateKey = ''
+    },
+    selectAddr (addr) {
+      this.formData.to = addr
+      this.prop.address = false
     },
     // tabChangeTime (val) {
     //   // console.log(val)
@@ -219,7 +243,6 @@ export default {
       })
     },
     openPwd () {
-      this.formData.to = this.formData.to.replace(/\s/, '')
       if (!this.$$.web3.utils.isAddress(this.formData.to)) {
         this.$notify('地址不正确')
         return
@@ -232,6 +255,7 @@ export default {
         this.$notify('数量不能为空')
         return
       }
+      this.formData.to = this.formData.to.replace(/\s/, '')
       this.prop.pwd = true
     },
     toSign (data) {
@@ -245,6 +269,8 @@ export default {
           this.AssetToAssetSign(data.info)
         } else if (this.activeName === 'b') {
           this.AssetToTimeLockSign(data.info)
+        } else {
+          this.AssetToTimeLockSign(data.info, 'Forever')
         }
       } else {
         this.$notify(data.info)
@@ -261,7 +287,7 @@ export default {
         asset: this.fsnId
       }).then(res => {
         console.log(res)
-        res.chainId = this.$$.web3.utils.toHex('46688')
+        res.chainId = this.chainId
         res.from = this.address
         console.log(res)
         let tx = new Tx(res)
@@ -272,15 +298,24 @@ export default {
         console.log(this.signTx)
       })
     },
-    AssetToTimeLockSign (pwd) {
+    AssetToTimeLockSign (pwd, type) {
+      let endTime = '', startTime = ''
+      if (type === 'Forever') {
+        startTime = this.$$.web3.utils.toHex(Date.parse(this.formData.beginTime))
+        endTime = this.$$.web3.utils.toHex('18446744073709551615')
+        // endTime = null
+      } else {
+        startTime = this.$$.web3.utils.toHex(Date.parse(this.formData.startTime))
+        endTime = this.$$.web3.utils.toHex(Date.parse(this.formData.endTime))
+      }
       let rawTx = {
         from: this.address,
         to: this.formData.to.replace(/\s/, ''),
         value: this.$$.web3.utils.toHex(this.$$.web3.utils.toWei(this.formData.value.toString(), 'ether')),
       }
       let rawTx2 = {
-        start: this.$$.web3.utils.toHex(Date.parse(this.formData.startTime)),
-        end: this.$$.web3.utils.toHex(Date.parse(this.formData.endTime)),
+        start: startTime,
+        end: endTime,
         asset: this.fsnId,
       }
       console.log(rawTx2)
@@ -288,7 +323,7 @@ export default {
         ...rawTx,
         ...rawTx2
       }).then(rawTx => {
-        rawTx.chainId = this.$$.web3.utils.toHex('46688')
+        rawTx.chainId = this.chainId
         rawTx.from = this.address
         console.log(rawTx)
         let tx = new Tx(rawTx)
