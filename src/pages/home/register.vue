@@ -9,14 +9,14 @@
           </div>
         </li>
         <li class="item">
-          <van-button type="info" @click="changePwd" class="WW100" :disabled="password.length <= 0">导入</van-button>
+          <van-button type="info" @click="changePwd" class="WW100 btn-yellow" :disabled="password.length <= 0">导入</van-button>
         </li>
       </ul>
       <div class="WW100 mt-30" v-if="walletJSON.length > 0">
       <!-- <div class="WW100 mt-30"> -->
         <textarea class="input-text WW100 font12" style="height:300px;" v-model="walletJSON" readonly id="copyTxtId"></textarea>
         <p class="flex-c font14 color_red mb-20">请保存好Keystore，如有遗失将无法找回</p>
-        <van-button type="primary" class="WW100" @click="saveKeystoreAndEnter">复制并进入钱包</van-button>
+        <van-button type="primary" class="WW100 btn-yellow" @click="saveKeystoreAndEnter">复制并进入钱包</van-button>
       </div>
     </div>
   </div>

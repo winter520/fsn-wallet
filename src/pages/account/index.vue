@@ -32,7 +32,7 @@
           <van-list v-model="loading" :finished="finished" finished-text="没有更多了">
             <!-- <van-cell v-for="item in balanceData" :key="item" :title="item"/> -->
             <ul class="list-box">
-              <li v-for="(item, index) in balanceData" :key="index" class="item flex-bc" @click="toUrl('/send', {id: index, balance: item})">
+              <li v-for="(item, index) in balanceData" :key="index" class="item flex-bc" @click="toUrl('/send', {id: index, balance: item, type: '0'})">
                 <div class="flex-sc">
                   <!-- <span class="label">资产名：</span>{{formatAddr(index)}} -->
                   <div class="logo">
@@ -55,7 +55,7 @@
           <van-list v-model="loading" :finished="finished" finished-text="没有更多了">
             <!-- <van-cell v-for="item in balanceData" :key="item" :title="item"/> -->
             <ul class="list-box">
-              <li v-for="(item, index) in timelockData" :key="index" class="item" @click="toUrl('/send', {id: fsnId, balance: item.Value, StartTime: item.StartTime, EndTime: item.EndTime})">
+              <li v-for="(item, index) in timelockData" :key="index" class="item" @click="toUrl('/send', {id: fsnId, balance: item.Value, StartTime: item.StartTime, EndTime: item.EndTime, type: '1'})">
                 <p class="flex-sc">
                   <span class="label">Amount：</span>{{$$.thousandBit($$.web3.utils.fromWei(item.Value.toString(), 'ether'), 'no')}}
                 </p>
@@ -174,6 +174,11 @@ export default {
     }
   },
   components: {walletAccount},
+  watch: {
+    address () {
+      this.initData()
+    }
+  },
   computed: {
     address () {
       return this.$store.state.address

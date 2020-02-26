@@ -10,9 +10,9 @@
       <!-- <div class="input-box">{{wDtil.ks}}</div> -->
       <!-- <p class="flex-c font14 color_red mb-20 mt-20">请保存好Keystore，如有遗失将无法找回</p> -->
       <div class="mt-20">
-        <van-button type="primary" @click="copyTxt('copyKeystore')">复制 Keystore</van-button>
-        <van-button type="info" @click="copyTxt('copyAddress')" class="ml-15">复制 Address</van-button>
-        <van-button type="danger" @click="prop.pwd = true" class="ml-15">删除</van-button>
+        <van-button type="primary" @click="copyTxt('copyKeystore')" class="btn-radius">复制 Keystore</van-button>
+        <van-button type="info" @click="copyTxt('copyAddress')" class="ml-10 btn-radius">复制 Address</van-button>
+        <van-button type="danger" @click="prop.pwd = true" class="ml-10 btn-radius plr30">删除</van-button>
       </div>
     </div>
 

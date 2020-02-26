@@ -7,8 +7,8 @@
       <!-- <div class="flex-c mb-20 color_99">
         FUSION Wallet
       </div> -->
-      <van-button type="primary" @click="toUrl('/register')">创建钱包</van-button>
-      <van-button type="info" @click="toUrl('/login')" class="ml-10">导入钱包</van-button>
+      <van-button type="primary" @click="toUrl('/register')" class="btn-yellow">创建钱包</van-button>
+      <van-button type="info" @click="toUrl('/login')" class="ml-10 btn-radius">导入钱包</van-button>
       <set-node></set-node>
       <!-- <div class="WW100 mt-30">
         <select class="WW100 input-text H35 font14 bgff" @change="changNet" v-model="netUrl">

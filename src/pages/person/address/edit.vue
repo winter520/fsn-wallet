@@ -15,8 +15,8 @@
           </div>
         </li>
         <li class="item flex-bc">
-          <van-button type="info" @click="handleClick" class="WW50">编辑</van-button>
-          <van-button type="danger" @click="removeKs" class="WW50 ml-15">删除</van-button>
+          <van-button type="info" @click="handleClick" class="WW50 btn-yellow">编辑</van-button>
+          <van-button type="danger" @click="removeKs" class="WW50 btn-radius ml-15">删除</van-button>
         </li>
       </ul>
     </div>

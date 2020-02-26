@@ -14,7 +14,7 @@
         </div>
       </li>
       <li class="item">
-        <van-button type="info" @click="toBackData" class="WW100" :disabled="password.length <= 0 && privateKey.length <= 0">解锁</van-button>
+        <van-button type="info" @click="toBackData" class="WW100 btn-yellow" :disabled="password.length <= 0 && privateKey.length <= 0">解锁</van-button>
       </li>
     </ul>
   </div>

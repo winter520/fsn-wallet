@@ -19,7 +19,7 @@
               </div>
             </li>
             <li class="item">
-              <van-button type="info" @click="inputFile" class="WW100" :disabled="!showPwd || password.length <= 0">导入</van-button>
+              <van-button type="info" @click="inputFile" class="WW100 btn-yellow" :disabled="!showPwd || password.length <= 0">导入</van-button>
             </li>
           </ul>
         </div>
@@ -34,7 +34,7 @@
               </div>
             </li>
             <li class="item">
-              <van-button type="info" @click="inputPrivateKey" class="WW100" :disabled="privateKey.length <= 0">导入</van-button>
+              <van-button type="info" @click="inputPrivateKey" class="WW100 btn-yellow" :disabled="privateKey.length <= 0">导入</van-button>
             </li>
           </ul>
         </div>

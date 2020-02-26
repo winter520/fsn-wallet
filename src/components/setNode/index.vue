@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="WW100 mt-30">
-      <select class="WW100 input-text H35 font14 bgff" v-model="netUrl">
+      <select class="WW100 input-text H45 font14 bgff" v-model="netUrl">
         <option value="0">自定义</option>
         <option value="https://fsn.dev/api">主网1</option>
         <option value="https://testnet.fsn.dev/api">测试网1</option>
@@ -11,10 +11,10 @@
       </select>
     </div>
     <div class="WW100 mt-10" v-if="Number(netUrl) === 0">
-      <input type="text" v-model="selfNetVal" class="WW100 input-text H35 font14 bgff" @change="setNet">
+      <input type="text" v-model="selfNetVal" class="WW100 input-text H45 font14 bgff" @change="setNet">
     </div>
-    <div class="WW100 mt-10" @click="changNet">
-      <van-button type="info" size="small">应用节点</van-button>
+    <div class="WW100 mt-30" @click="changNet">
+      <van-button type="info" class="btn-yellow WW100">应用节点</van-button>
     </div>
   </div>
 </template>

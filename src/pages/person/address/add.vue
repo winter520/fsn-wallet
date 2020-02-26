@@ -15,7 +15,7 @@
           </div>
         </li>
         <li class="item">
-          <van-button type="info" @click="handleClick" class="WW100">增加</van-button>
+          <van-button type="info" @click="handleClick" class="WW100 btn-yellow">增加</van-button>
         </li>
       </ul>
     </div>
