@@ -1,3 +1,4 @@
+import QRCode from 'qrcodejs2'
 
 export default {
   fromTime (timestamp) {
@@ -185,5 +186,24 @@ export default {
     else if (jsonArr.publisher == config.AppName && !jsonArr.encrypted) return false;
     else
       throw 'Keystore error!';
+  },
+  cutOut (str, start, end) {
+    // console.log(str)
+    if (!str) return ''
+    var str1 = str.substr(0, start)
+    var str2 = str.substr(str.length - end)
+    return str = str1 + '…' + str2
+  },
+  qrCode (cont, id) {
+    document.getElementById(id).innerHTML = ''
+    let qrcodeInit = new QRCode(id, {
+      width: 200,
+      height: 200, // 高度
+      text: cont, // 二维码内容
+      // render: "canvas" // 设置渲染方式（有两种方式 table和canvas，默认是canvas）
+      background: "none",
+      correctLevel: 3
+      // foreground: "#ff0"
+    })
   }
 }

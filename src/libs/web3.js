@@ -113,6 +113,13 @@ web3.extend({
       params: 3,
       inputFormatter: [null, null, null],
       outputFormatter: null
+    },
+    {
+      name: 'getAddressByNotation',
+      call: 'fsn_getAddressByNotation',
+      params: 2,
+      inputFormatter: [null, null],
+      outputFormatter: null
     }
   ]
 })

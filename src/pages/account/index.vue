@@ -2,31 +2,28 @@
   <div class="bgContent">
     <div class="top-box">
       <div class="top-bg">
-        <h5 class="text-l color_ff">FUSION (FSN)</h5>
+        <!-- <h5 class="text-l color_ff">FUSION (FSN)</h5> -->
         <!-- <van-icon name="cross" class="close"/> -->
-        <span class="close flex-c font12" @click="popup.account = true"><van-icon name="exchange" class="font14" />切换账户</span>
-        <div class="info">
-          <ul class="flex-bc flex-wrap">
-            <li class="WW50 item flex-sc">
-              <span>短账号：</span>
-              <span>{{addrNode ? addrNode : '无'}}</span>
-            </li>
-            <li class="WW50 item flex-sc">
-              <span>余额：</span>
-              <!-- <span>{{$$.thousandBit($$.web3.utils.fromWei(fsnBalance, 'ether'), 8)}}</span> -->
-              <!-- <span>{{$$.web3.utils.fromWei(fsnBalance, 'ether')}}</span> -->
-              <span>{{$$.thousandBit(fsnBalance, 8)}}</span>
-            </li>
-            <li class="WW100 item flex-sc font12">
-              <span>地址：</span>
-              <span>{{address}}</span>
-            </li>
-            <li class="WW100 item flex-sc font12">
-              <span>节点：</span>
-              <span>{{network}}</span>
-            </li>
-          </ul>
+        <span class="close flex-c font12" @click="popup.account = true">
+          <!-- <van-icon name="exchange" class="font14" />切换账户 -->
+          <!-- <van-icon name="exchange" class="font18" /> -->
+          <van-icon name="apps-o" class="font18" />
+          <!-- <van-icon name="bars" class="font18" /> -->
+        </span>
+        <div class="top-header">
+          <div class="pic flex-c"><img src="@/assets/img/logo/logo0.png" class="WW100"></div>
+          <div class="txt font18">{{addrNode ? addrNode : '无'}}</div>
+          <div class="txt flex-c" @click="qrcode(address)">
+            {{$$.cutOut(address, 10, 12)}}
+            <van-icon name="qr" class="font16 ml-10"/>
+          </div>
+          <div class="txt font12 flex-c color_gray">{{network}}</div>
         </div>
+      </div>
+      
+      <div class="top-balance-bg flex-bc">
+        <div class="l">FSN资产：</div>
+        <div class="r">≈ {{$$.thousandBit(fsnBalance, 8)}}</div>
       </div>
     </div>
     <div>
@@ -35,13 +32,20 @@
           <van-list v-model="loading" :finished="finished" finished-text="没有更多了">
             <!-- <van-cell v-for="item in balanceData" :key="item" :title="item"/> -->
             <ul class="list-box">
-              <li v-for="(item, index) in balanceData" :key="index" class="item" @click="toUrl('/send', {id: index, balance: item})">
-                <p class="flex-sc">
-                  <span class="label">资产名：</span>{{formatAddr(index)}}
-                </p>
-                <div class="flex-bc">
-                  <p class="WW50 flex-sc"><span class="label">ID：</span>{{$$.cutOut(index, 8, 6)}}</p>
-                  <p class="WW50 flex-sc"><span class="label">余额：</span>{{$$.thousandBit($$.web3.utils.fromWei(item.toString(), 'ether'), 3)}}</p>
+              <li v-for="(item, index) in balanceData" :key="index" class="item flex-bc" @click="toUrl('/send', {id: index, balance: item})">
+                <div class="flex-sc">
+                  <!-- <span class="label">资产名：</span>{{formatAddr(index)}} -->
+                  <div class="logo">
+                    <img :src="getCoinInfo(formatAddr(index)).logo" v-if="getCoinInfo(formatAddr(index))">
+                    <i class="null flex-c" v-else>0x</i>
+                  </div>
+                  <span class="label"></span>{{formatAddr(index)}}
+                </div>
+                <div class="WW60">
+                  <!-- <p class="WW50 flex-sc"><span class="label">ID：</span>{{$$.cutOut(index, 8, 6)}}</p>
+                  <p class="WW50 flex-sc"><span class="label">余额：</span>{{$$.thousandBit($$.web3.utils.fromWei(item.toString(), 'ether'), 'no')}}</p> -->
+                  <p class="flex-ec">≈ {{$$.thousandBit($$.web3.utils.fromWei(item.toString(), 'ether'), 'no')}}</p>
+                  <p class="flex-ec font12">{{$$.cutOut(index, 8, 6)}}</p>
                 </div>
               </li>
             </ul>
@@ -51,13 +55,16 @@
           <van-list v-model="loading" :finished="finished" finished-text="没有更多了">
             <!-- <van-cell v-for="item in balanceData" :key="item" :title="item"/> -->
             <ul class="list-box">
-              <li v-for="(item, index) in timelockData" :key="index" class="item">
+              <li v-for="(item, index) in timelockData" :key="index" class="item" @click="toUrl('/send', {id: fsnId, balance: item.Value, StartTime: item.StartTime, EndTime: item.EndTime})">
                 <p class="flex-sc">
-                  <span class="label">AMOUNT：</span>{{$$.thousandBit($$.web3.utils.fromWei(item.Value.toString(), 'ether'), 3)}}
+                  <span class="label">Amount：</span>{{$$.thousandBit($$.web3.utils.fromWei(item.Value.toString(), 'ether'), 'no')}}
                 </p>
                 <div class="flex-bc">
-                  <p class="WW50 flex-sc"><span class="label">FROM：</span>{{$$.timeChange({date: item.StartTime, type: 'yyyy-mm-dd', format: '-'})}}</p>
-                  <p class="WW50 flex-sc"><span class="label">TO：</span>{{
+                  <!-- <p class="WW50 flex-sc"><span class="label">FROM：</span>{{$$.timeChange({date: item.StartTime, type: 'yyyy-mm-dd', format: '-'})}}</p> -->
+                  <p class="WW50 flex-sc"><span class="label">From：</span>{{
+                    item.StartTime.toString().length > 13 ? 'Forever' : $$.timeChange({date: item.StartTime, type: 'yyyy-mm-dd', format: '-'})
+                  }}</p>
+                  <p class="WW50 flex-sc"><span class="label">To：</span>{{
                     item.EndTime.toString().length > 13 ? 'Forever' : $$.timeChange({date: item.EndTime, type: 'yyyy-mm-dd', format: '-'})
                   }}</p>
                 </div>
@@ -72,16 +79,36 @@
     <van-popup v-model="popup.account" close-icon-position="top-left" position="left" :style="{ width: '60%', height: '100%' }" >
       <wallet-account @on-wallet="changeAccount"></wallet-account>
     </van-popup>
+
+    <van-popup v-model="popup.qrcode" :style="{ width: '280px', height: '360px' }" >
+      <div class="qrcodeCont_box">
+        <div id="qrcode" class="flex-c"></div>
+        <div class="qrcodeCont_title">
+          <h3 class="font12 addr">{{address}}</h3>
+          <h3 class="font14">你的地址</h3>
+        </div>
+      </div>
+    </van-popup>
+
   </div>
 </template>
 
 <style lang="scss">
 .top-box {
-  width: 100%;padding:10px 15px;
+  width: 100%;padding:0;
   .top-bg {
-    width: 100%;padding:15px 15px;background: #0099ff;border-radius: 5px;position:relative;
+    width: 100%;height: 180px;padding:15px 15px;background: url('~@/assets/img/bg/topBg.png') no-repeat center; background-size: 100% 100%;position:relative;
     .close {
-      position: absolute;top:15px;right: 15px;color:#fff;font-size: 14px;
+      position: absolute;top:15px;right: 15px;color:#333;font-size: 14px;
+    }
+    .top-header {
+      width: 100%;
+      .pic {
+        width: 60px;height: 60px;margin: 20px auto 10px;background: #9b9188;border-radius: 100%;padding: 12px;
+      }
+      .txt{
+        font-size: 14px;line-height: 21px;
+      }
     }
     .info {
       .item {
@@ -89,19 +116,43 @@
       }
     }
   }
+  .top-balance-bg {
+    width: 100%;height: 90px;background: url('~@/assets/img/bg/wave.png') no-repeat center #e8be29; background-size: 100% 100%;padding: 45px 15px 25px;
+    .l {
+      font-size: 14px;line-height: 20px;
+    }
+    .r {
+      font-size: 18px;font-weight: bold;
+    }
+  }
 }
 .list-box {
   width: 100%;padding: 0px 0;
   .item {
     width: 100%;padding: 8px 15px;border-bottom: 1px solid #ddd;font-size: 14px;
+    .logo {
+      width: 25px; height: 25px;margin-right: 10px;
+      img {
+        width: 100%;
+      }
+      .null {
+        width: 100%;height: 100%;border:1px solid #e8be29;border-radius: 100%;font-size: 12px;color: #e8be29;
+      }
+    }
     .label {
       font-weight: bold;
     }
   }
 }
+
+.qrcodeCont_box{width: 100%;height: 100%;padding:40px 20px;}
+.qrcodeCont_box .addr {word-break: break-all;line-height: 20px;margin-bottom: 10px;}
+.qrcodeCont_title{text-align:center;font-size:16px;margin-top:20px;}
 </style>
 
 <script>
+// const coinInfo = require('@/assets/config/coininfo.json')
+import coinInfo from '@/assets/config/coininfo.js'
 import walletAccount from '@c/account/index.vue'
 export default {
   name: 'account',
@@ -117,7 +168,8 @@ export default {
       fsnId: '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
       network: localStorage.getItem('network'),
       popup: {
-        account: false
+        account: false,
+        qrcode: false
       }
     }
   },
@@ -131,6 +183,7 @@ export default {
     }
   },
   mounted () {
+    // console.log(coinInfo)
     // console.log(this.$$.web3)
     this.$$.isConnected().then(res => {
       this.initData()
@@ -182,14 +235,26 @@ export default {
     formatAddr (addr) {
       let name = ''
       if (addr === this.fsnId) {
-        name = '	FUSION (FSN) '
+        name = 'FSN'
       } else if (addr === '0xf4798cc45b0fe0c6a27255745f6977166619bf9615d5d25a0f086e6fb24756aa') {
-        name = 'Vote1 (Vote1)'
+        name = 'Vote1'
       } else {
         name = addr
       }
       return name
-    }
+    },
+    getCoinInfo (coin) {
+      if (typeof coinInfo[coin] !== 'undefined') {
+        return coinInfo[coin]
+      }
+      return ''
+    },
+    qrcode (cont) {
+      this.popup.qrcode = true
+			this.$nextTick(() => {
+        this.$$.qrCode(cont, "qrcode")
+			})
+    },
   }
 }
 </script>

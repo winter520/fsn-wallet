@@ -1,16 +1,23 @@
 <template>
-  <div class="">
+  <div class="footer-box">
     <van-tabbar v-model="nowNav">
-      <van-tabbar-item name="1" to="/" icon="home-o">首页</van-tabbar-item>
-      <van-tabbar-item name="2" icon="search">查找</van-tabbar-item>
+      <van-tabbar-item name="1" to="/" icon="home-o">资产</van-tabbar-item>
+      <van-tabbar-item name="2" to="/search" icon="search">查找</van-tabbar-item>
       <van-tabbar-item name="3" to="/person" icon="friends-o">我的</van-tabbar-item>
       <!-- <van-tabbar-item icon="setting-o">标签</van-tabbar-item> -->
     </van-tabbar>
   </div>
 </template>
 
-<style>
-
+<style lang="scss">
+.footer-box {
+  .van-tabbar-item {
+    color: #838d9a;
+  }
+  .van-tabbar-item--active {
+    color: #edb517;
+  }
+}
 </style>
 
 <script>

@@ -172,13 +172,14 @@ export default {
   },
   mounted () {
     this.formData.id = this.$route.query.id
-    this.$$.isConnected().then(res => {
-      this.$$.web3.fsn.getBalance(this.fsnId, this.address, 'latest').then(res => {
-        this.balance = this.$$.web3.utils.fromWei(res, 'ether')
-      })
-    }).catch(err => {
-      this.$notify('节点连接失败！')
-    })
+    this.balance = this.$$.web3.utils.fromWei(this.$route.query.balance, 'ether')
+    // this.$$.isConnected().then(res => {
+    //   this.$$.web3.fsn.getBalance(this.fsnId, this.address, 'latest').then(res => {
+    //     this.balance = this.$$.web3.utils.fromWei(res, 'ether')
+    //   })
+    // }).catch(err => {
+    //   this.$notify('节点连接失败！')
+    // })
   },
   methods: {
     cancel () {

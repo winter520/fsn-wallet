@@ -23,6 +23,7 @@ export default {
       try {
         web3.eth.getBlock('latest', (err, res) => {
           if (err) {
+            console.log(err)
             reject(false)
           } else {
             // console.log(res)
@@ -30,6 +31,7 @@ export default {
           }
         })
       } catch (error) {
+        console.log(error)
         reject(false)
       }
     })

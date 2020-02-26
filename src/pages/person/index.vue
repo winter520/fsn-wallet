@@ -1,11 +1,11 @@
 <template>
   <div class="p-box">
     <div class="p-header-box">
-      <div class="W50 flex-c" style="margin:0 auto 10px">
-        <img src="@/assets/img/logo.png" class="WW100">
+      <div class="W50 flex-c logo" style="margin:0 auto 10px">
+        <img src="@/assets/img/logo/logo0.png" class="WW100">
       </div>
-      <div class="flex-c"> FUSION Wallet </div>
-      <p class="flex-c font12">一款简约轻量的Fusion钱包</p>
+      <div class="flex-c"> Gwhale Wallet </div>
+      <p class="flex-c font12">一款简约轻量的钱包</p>
     </div>
     <div class="p-list-box">
       <ul>
@@ -39,7 +39,10 @@
   width: 100%;height: 100%;background: #eee;padding-bottom: 50px;
 }
 .p-header-box {
-  padding: 15px;background: #bae5ff;
+  width: 100%;height: 180px;padding:35px 15px 15px;background: url('~@/assets/img/bg/topBg.png') no-repeat center; background-size: 100% 100%;position:relative;
+  .logo {
+    width: 60px;height: 60px;margin: 20px auto 10px;background: #9b9188;border-radius: 100%;padding: 12px;
+  }
 }
 .p-list-box {
   margin-top: 15px;

@@ -27,11 +27,15 @@
 export default {
   name: 'setnode',
   data () {
-    let _isSelfNet = Number(localStorage.getItem('isSelfNet'))
+    // let _isSelfNet = Number(localStorage.getItem('isSelfNet'))
     return {
-      netUrl: _isSelfNet ? 0 : this.$$.serverURL,
-      isSelfNet: _isSelfNet,
-      selfNetVal: _isSelfNet ? localStorage.getItem('network') : '',
+      // netUrl: _isSelfNet ? 0 : this.$$.serverURL,
+      // isSelfNet: _isSelfNet,
+      // selfNetVal: _isSelfNet ? localStorage.getItem('network') : '',
+      // networkArr: []
+      netUrl: '',
+      isSelfNet: '',
+      selfNetVal: '',
       networkArr: []
     }
   },
@@ -39,8 +43,16 @@ export default {
     // setTimeout(() => {
     //   this.changNet()
     // }, 200)
+    // console.log(this.netUrl)
+    this.initSet()
   },
   methods: {
+    initSet () {
+      let _isSelfNet = Number(localStorage.getItem('isSelfNet'))
+      this.netUrl = _isSelfNet ? 0 : (localStorage.getItem('network') ? localStorage.getItem('network') : this.$$.serverURL)
+      this.isSelfNet = _isSelfNet
+      this.selfNetVal = _isSelfNet ? localStorage.getItem('network') : ''
+    },
     changNet () {
       // console.log(this.netUrl)
       if (Number(this.netUrl) === 0) {
@@ -58,6 +70,7 @@ export default {
       }).catch(err => {
         this.$notify('节点连接失败！')
       })
+      console.log(url)
       localStorage.setItem('network', url)
       let flag = Number(this.netUrl) === 0 ? 1 : 0
       localStorage.setItem('isSelfNet', flag)

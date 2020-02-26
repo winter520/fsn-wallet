@@ -156,5 +156,18 @@ export default [
       },
       component: resolve => require.ensure([], () => resolve(require('@/pages/person/node.vue')) ),
     }]
-  }
+  },
+  {
+    path: '/search',
+    component: Main,
+    children: [{
+      path: '/',
+      meta: {
+        title: '搜索',
+        showHdOrBtn: '1',
+        navBtmCur: '2'
+      },
+      component: resolve => require.ensure([], () => resolve(require('@/pages/search/index.vue')) ),
+    }]
+  },
 ]
