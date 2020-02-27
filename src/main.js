@@ -29,7 +29,9 @@ import {
   SwipeCell,
   NoticeBar,
   PullRefresh,
-  Search
+  Search,
+  Switch,
+  Picker 
 } from 'vant'
 
 Vue.use(Button)
@@ -51,6 +53,8 @@ Vue.use(SwipeCell)
 Vue.use(NoticeBar)
 Vue.use(PullRefresh)
 Vue.use(Search)
+Vue.use(Switch)
+Vue.use(Picker)
 
 Vue.use(Vuex)
 Vue.config.productionTip = false

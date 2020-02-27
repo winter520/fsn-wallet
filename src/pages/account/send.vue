@@ -33,11 +33,23 @@
               <van-tab title="无" name="a" v-if="sendType === '0'">
               </van-tab>
               <van-tab title="时间段" name="b">
-                <div class="flex-bc H40 mt-30">
+                <div class="WW100" v-if="sendType === '0'">
+                  <van-cell center>
+                    <span slot="title" class="flex-sc color_99">
+                      高级
+                    </span>
+                    <van-switch v-model="selectTimeType" slot="right-icon" size="24" active-color="#e9bf29" @change="changeLevel"/>
+                  </van-cell>
+                </div>
+                <div class="flex-bc H40 mt-20" v-if="selectTimeType">
                   从
                   <input type="text" v-model="formData.startTime" @click="prop.startTime = true; formTimeKey = 'startTime'" placeholder="选择开始时间" class="input-text HH100 W120 font12 center" readonly>
                   到
                   <input type="text" v-model="formData.endTime" @click="prop.endTime = true; formTimeKey = 'endTime'" placeholder="选择截止时间" class="input-text HH100 W120 font12 center" readonly>
+                </div>
+                <div class="WW100 flex-bc H40 mt-20" v-else>
+                  <input type="text" v-model="formData.month" @click="prop.month = true; formTimeKey = 'month'" placeholder="选择时间" class="input-text HH100 WW80 font12 center" readonly>
+                  <p class="flex-c ml-10 font14" style="white-space:nowrap;">个月</p>
                 </div>
               </van-tab>
               <!-- <van-tab title="永远" name="c" v-if="sendType === '0' || urlParams.EndTime.toString().length > 13"> -->
@@ -66,6 +78,20 @@
     </van-popup>
     <!-- 时间段 end -->
 
+    <!-- 选择月份 start -->
+    <van-popup v-model="prop.month" position="bottom">
+      <van-picker 
+        :columns="['3','4','5','6','7','8','9','10','11','12']"
+        :default-index="0"
+        show-toolbar
+        confirm-button-text="确认"
+        cancel-button-text="取消"
+        @confirm="confirmMonth"
+        @cancel="cancel"
+      />
+    </van-popup>
+    <!-- 选择月份 end -->
+
     <!-- 永远 start -->
     <van-popup v-model="prop.beginTime" position="bottom">
       <van-datetime-picker type="date" @confirm="changeTime" @cancel="prop.beginTime = false" :min-date="minDate"/>
@@ -79,7 +105,7 @@
     <!-- 签名 end -->
 
     <!-- 发送确认 start -->
-    <van-popup v-model="prop.confirm" :close-on-click-overlay="false">
+    <van-popup v-model="prop.confirm" :close-on-click-overlay="false" position="bottom">
       <div class="confirm-box">
         <h3>发送确认</h3>
         <ul class="ul">
@@ -95,7 +121,7 @@
         </ul>
         <div class="mt-30">
           <van-button type="info" @click="sendTxns" class="WW30 btn-yellow">发送</van-button>
-          <van-button @click="cancel" class="WW30 ml-20">取消</van-button>
+          <van-button @click="cancel" class="WW30 ml-20 btn-radius">取消</van-button>
         </div>
       </div>
     </van-popup>
@@ -138,6 +164,7 @@ export default {
     return {
       activeName: 'a',
       sendType: '0',
+      selectTimeType: false,
       formData: {
         // to: '0x014DC8Fd1221AA87C800A2fF8dB60130b333D410',
         // value: 0.1
@@ -152,7 +179,8 @@ export default {
         beginTime: false,
         pwd: false,
         confirm: false,
-        address: false
+        address: false,
+        month: false
       },
       privateKey: '',
       password: '',
@@ -180,6 +208,7 @@ export default {
     this.balance = this.$$.web3.utils.fromWei(this.urlParams.balance, 'ether')
     this.sendType = this.urlParams.type
     if (this.sendType === '1') {
+      this.selectTimeType = true
       this.activeName = 'b'
       this.minDate = new Date(Number(this.urlParams.StartTime))
       this.maxDate = new Date(Number(this.urlParams.EndTime))
@@ -218,6 +247,7 @@ export default {
       this.prop.beginTime = false
       this.prop.endTime = false
       this.prop.startTime = false
+      this.prop.month = false
       this.signTx = ''
       this.password = ''
       this.privateKey = ''
@@ -225,6 +255,20 @@ export default {
     selectAddr (addr) {
       this.formData.to = addr
       this.prop.address = false
+    },
+    confirmMonth (val) {
+      console.log(val)
+      this.formData.month = val
+      this.prop.month = false
+    },
+    changeLevel () {
+      console.log(this.selectTimeType)
+      if (this.selectTimeType) {
+        this.cancel()
+        this.formData.month = ''
+      } else {
+        this.formData.startTime = this.formData.endTime = ''
+      }
     },
     // tabChangeTime (val) {
     //   // console.log(val)
@@ -283,6 +327,23 @@ export default {
       }
       if (!this.formData.value || Number(this.formData.value) === 0) {
         this.$notify('数量不能为空')
+        return
+      }
+      if (this.activeName === 'b') {
+        if (this.selectTimeType) {
+          if (!this.formData.startTime || !this.formData.endTime) {
+            this.$notify('请选择时间！')
+            return
+          }
+        } else {
+          if (!this.formData.month) {
+            this.$notify('请选择月份！')
+            return
+          }
+        }
+      }
+      if (this.activeName === 'c' && !this.formData.beginTime) {
+        this.$notify('请选择开始时间')
         return
       }
       this.formData.to = this.formData.to.replace(/\s/, '')
@@ -348,14 +409,19 @@ export default {
         endTime = this.$$.web3.utils.toHex('18446744073709551615')
         // endTime = null
       } else {
-        startTime = Date.parse(this.formData.startTime)
+        if (this.selectTimeType) {
+          startTime = Date.parse(this.formData.startTime)
+          endTime = Date.parse(this.formData.endTime)
+        } else {
+          startTime = Date.now()
+          endTime = startTime + (1000 * 60 * 60 * 24 * 30 * Number(this.formData.month))
+        }
         startTime = parseInt(startTime / 1000)
         startTime = this.$$.web3.utils.toHex(startTime)
-        endTime = Date.parse(this.formData.endTime)
         endTime = parseInt(endTime / 1000)
         endTime = this.$$.web3.utils.toHex(endTime)
       }
-      console.log(this.formData.value)
+      console.log(this.formData)
       let rawTx = {
         from: this.address,
         to: this.formData.to.replace(/\s/, ''),
