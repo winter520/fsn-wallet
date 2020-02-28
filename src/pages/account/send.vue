@@ -252,6 +252,12 @@ export default {
       // console.log(this.activeName)
       // this.formData.endTime = new Date(this.urlParams.EndTime)
     }
+    let nodeUrl = localStorage.getItem('network')
+    if ( nodeUrl === 'https://testnet.fsn.dev/api') {
+      this.chainId = this.$$.web3.utils.toHex('46688')
+    } else {
+      this.chainId = this.$$.web3.utils.toHex('32659')
+    }
     // console.log(this.maxDate)
     // console.log(this.urlParams.type)
     // this.$$.isConnected().then(res => {
