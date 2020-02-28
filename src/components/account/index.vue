@@ -1,6 +1,6 @@
 <template>
   <div class="boxConntent1">
-    <van-list v-model="loading" :finished="finished" finished-text="没有更多了">
+    <van-list v-model="loading" :finished="finished" :finished-text="$t('tip').noMore" :loading-text="$t('loading').l_1">
       <div class="w-list-box">
         <ul class="WW100">
           <li class="item flex-bc" v-for="(item, index) in walletArr" :key="index" @click="hangleClick(item)">

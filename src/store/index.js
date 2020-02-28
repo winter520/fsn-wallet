@@ -13,12 +13,18 @@ if (localStorage.getItem('addressObj')) {
   addressObj = JSON.parse(localStorage.getItem('addressObj'))
 } 
 
+const navLang = navigator.language
+const localLang = (navLang === 'zh-CN' || navLang === 'en-US') ? navLang : false
+const local = localStorage.getItem('language') ? localStorage.getItem('language') : localLang
+let lang = local || 'en-US'
+
 const store = new Vuex.Store({
   state: {
     address: localStorage.getItem('address') ? localStorage.getItem('address') : '',
     keystore: localStorage.getItem('keystore') ? localStorage.getItem('keystore') : '',
     keystoreObj: ksArr,
-    addressObj: addressObj
+    addressObj: addressObj,
+    language: lang
   },
   mutations: {
     setAddress (state, data) {
@@ -60,6 +66,14 @@ const store = new Vuex.Store({
         localStorage.setItem('addressObj', JSON.stringify(state.addressObj))
       }
     },
+    setLanguage (state, data) {
+      // state.language = data
+      let info = data.info ? data.info : ''
+      state.language = info
+      if (!data.type) {
+        localStorage.setItem('language', info)
+      }
+    }
   },
 })
 

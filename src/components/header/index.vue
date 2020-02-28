@@ -27,13 +27,27 @@ export default {
   watch: {
     '$route' (cur) {
       // console.log(cur)
-      this.title = cur.meta.title
+      // this.title = cur.meta.title
+      this.setTitle()
+    },
+    lang () {
+      this.setTitle()
+    }
+  },
+  computed: {
+    lang () {
+      return this.$store.state.language
     }
   },
   mounted () {
-    this.title = this.$route.meta.title
+    // this.title = this.$route.meta.title
+    this.setTitle()
   },
   methods: {
+    setTitle () {
+      let param = this.$route.meta.lang
+      this.title = this.$t('title')[param]
+    },
     onClickLeft() {
       this.$router.go(-1)
     },

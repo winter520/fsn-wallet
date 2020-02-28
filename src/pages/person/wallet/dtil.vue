@@ -1,7 +1,7 @@
 <template>
   <div class="boxConntent1">
     <van-notice-bar
-      text="请保存好Keystore，如有遗失将无法找回"
+      :text="$t('tip').tip1"
       left-icon="warn-o"
     />
     <div class="WW100 w-dtil-box">
@@ -10,9 +10,9 @@
       <!-- <div class="input-box">{{wDtil.ks}}</div> -->
       <!-- <p class="flex-c font14 color_red mb-20 mt-20">请保存好Keystore，如有遗失将无法找回</p> -->
       <div class="mt-20">
-        <van-button type="primary" @click="copyTxt('copyKeystore')" class="btn-radius">复制 Keystore</van-button>
-        <van-button type="info" @click="copyTxt('copyAddress')" class="ml-10 btn-radius">复制 Address</van-button>
-        <van-button type="danger" @click="prop.pwd = true" class="ml-10 btn-radius plr30">删除</van-button>
+        <van-button type="primary" @click="copyTxt('copyKeystore')" class="btn-radius">{{$t('btn').copy}} Keystore</van-button>
+        <van-button type="info" @click="copyTxt('copyAddress')" class="ml-10 btn-radius">{{$t('btn').copy}} Address</van-button>
+        <van-button type="danger" @click="prop.pwd = true" class="ml-10 btn-radius plr30">{{$t('btn').del}}</van-button>
       </div>
     </div>
 
@@ -57,12 +57,12 @@ export default {
       this.prop.pwd = false
       if (data.state) {
         this.$dialog.confirm({
-          title: '删除确认',
-          message: '是否删除此账户？' + this.wDtil.address
+          title: this.$t('warn').w_9,
+          message: this.$t('warn').w_10 + this.wDtil.address
         }).then(res => {
           console.log(res)
           this.$store.commit('setRemoveKeystore', this.wDtil.address)
-          this.$notify({ type: 'success', message: '删除成功！' })
+          this.$notify({ type: 'success', message: this.$t('success').s_2 })
           this.toUrl('/person/wallet')
         }).catch(err => {
           console.log(err)
@@ -74,7 +74,7 @@ export default {
     copyTxt (id) {
       document.getElementById(id).select()
       document.execCommand("Copy")
-      this.$notify({ type: 'success', message: '复制成功！' })
+      this.$notify({ type: 'success', message: this.$t('success').s_3 })
     }
   }
 }

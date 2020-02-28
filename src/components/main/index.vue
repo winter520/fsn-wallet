@@ -29,6 +29,14 @@ export default {
   watch: {
     '$route' (cur) {
       this.changePath()
+    },
+    lang () {
+      this.reload()
+    }
+  },
+  computed: {
+    lang () {
+      return this.$store.state.language
     }
   },
   mounted () {
@@ -40,7 +48,7 @@ export default {
       this.$nextTick(() => {
         this.isRefresh = true
         this.isLoading = false
-        this.$notify({ type: 'success', message: '刷新成功' })
+        // this.$notify({ type: 'success', message: '刷新成功' })
       })
     },
     changePath () {

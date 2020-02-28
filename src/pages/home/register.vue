@@ -3,20 +3,20 @@
     <div class="form-box HH100 pt-30">
       <ul class="ul" v-if="walletJSON.length <= 0">
         <li class="item">
-          <label class="label">密码:</label>
+          <label class="label">{{$t('label').password}}:</label>
           <div class="input-box">
             <input type="password" v-model="password" class="input-text HH100 WW100">
           </div>
         </li>
         <li class="item">
-          <van-button type="info" @click="changePwd" class="WW100 btn-yellow" :disabled="password.length <= 0">导入</van-button>
+          <van-button type="info" @click="changePwd" class="WW100 btn-yellow" :disabled="password.length <= 0">{{$t('btn').createWt}}</van-button>
         </li>
       </ul>
       <div class="WW100 mt-30" v-if="walletJSON.length > 0">
       <!-- <div class="WW100 mt-30"> -->
         <textarea class="input-text WW100 font12" style="height:300px;" v-model="walletJSON" readonly id="copyTxtId"></textarea>
-        <p class="flex-c font14 color_red mb-20">请保存好Keystore，如有遗失将无法找回</p>
-        <van-button type="primary" class="WW100 btn-yellow" @click="saveKeystoreAndEnter">复制并进入钱包</van-button>
+        <p class="flex-c font14 color_red mb-20">{{$t('tip').tip1}}</p>
+        <van-button type="primary" class="WW100 btn-yellow" @click="saveKeystoreAndEnter">{{$t('btn').copyAndJoin}}</van-button>
       </div>
     </div>
   </div>
@@ -44,7 +44,7 @@ export default {
   methods: {
     changePwd () {
       if (this.password.length < 9) {
-        this.$notify('您的密码必须至少9个字符。请确保它是一个强密码。')
+        this.$notify(this.$t('warn').w_8)
       } else {
         let walletInit = this.$$.wallet.generate(this.password)
         let jsonStr = walletInit.toV3(this.password, {
@@ -53,7 +53,7 @@ export default {
         })
         this.walletJSON = JSON.stringify(jsonStr)
         this.address = walletInit.getChecksumAddressString()
-        this.$notify({ type: 'success', message: '创建成功！' })
+        this.$notify({ type: 'success', message: this.$t('success').s_5 })
       }
     },
     saveKeystoreAndEnter () {
@@ -65,11 +65,6 @@ export default {
       })
       this.toUrl('/')
     },
-    // copyTxt (id) {
-    //   document.getElementById(id).select()
-    //   document.execCommand("Copy")
-    //   this.$notify({ type: 'success', message: '复制成功！' })
-    // }
   }
 }
 </script>

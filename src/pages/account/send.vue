@@ -1,18 +1,17 @@
 <template>
   <div>
     <div class="form-box HH100 pt-30">
-      <div class="font12 color_red">
-        <!-- Sending Native FSN to ERC-20 FSN Exchanges will result in permanent loss. Check here for the latest status on which exchanges have made the switch to Native FSN before sending. -->
+      <!-- <div class="font12 color_red">
         将本地FSN发送到ERC-20 FSN交换将导致永久性损失。在发送之前，请检查Exchange已切换到本机FSN的最新状态。
-      </div>
+      </div> -->
       <ul class="ul">
         <li class="item">
-          <label class="label">发送地址:</label>
+          <label class="label">{{$t('label').address}}:</label>
           <div class="input-box relative">
             <input type="text" v-model="formData.to" class="input-text HH100 WW100 pr-40">
             <div class="down-arrow flex-c" @click="prop.address = true"><van-icon name="location-o" /></div>
           </div>
-          <span class="flex-sc font12 color_99">余额：{{balance}}</span>
+          <span class="flex-sc font12 color_99">{{$t('label').balance}}：{{balance}}</span>
         </li>
         <!-- <li class="item">
           <label class="label">YOU SEND:</label>
@@ -21,60 +20,73 @@
           </div>
         </li> -->
         <li class="item">
-          <label class="label">发送数量:</label>
+          <label class="label">{{$t('label').value}}:</label>
           <div class="input-box">
             <input type="number" v-model="formData.value" class="input-text HH100 WW100">
           </div>
         </li>
         <li class="item">
-          <label class="label">时间锁:</label>
+          <label class="label">{{$t('label').timelock}}:</label>
           <div class="WW100">
             <van-tabs v-model="activeName" sticky class="bgContent">
-              <van-tab title="无" name="a" v-if="sendType === '0'">
+              <van-tab :title="$t('label').null" name="a" v-if="sendType === '0'">
               </van-tab>
-              <van-tab title="时间段" name="b">
+              <van-tab :title="$t('label').timelock" name="b">
                 <div class="WW100" v-if="sendType === '0'">
                   <van-cell center>
                     <span slot="title" class="flex-sc color_99">
-                      高级
+                      {{$t('label').advance}}
                     </span>
                     <van-switch v-model="selectTimeType" slot="right-icon" size="24" active-color="#e9bf29" @change="changeLevel"/>
                   </van-cell>
                 </div>
                 <div class="flex-bc H40 mt-20" v-if="selectTimeType">
-                  从
-                  <input type="text" v-model="formData.startTime" @click="prop.startTime = true; formTimeKey = 'startTime'" placeholder="选择开始时间" class="input-text HH100 W120 font12 center" readonly>
-                  到
-                  <input type="text" v-model="formData.endTime" @click="prop.endTime = true; formTimeKey = 'endTime'" placeholder="选择截止时间" class="input-text HH100 W120 font12 center" readonly>
+
+                  <input type="text" v-model="formData.startTime" @click="prop.startTime = true; formTimeKey = 'startTime'" :placeholder="$t('label').startTime" class="input-text HH100 WW45 font12 center" readonly>
+
+                  <input type="text" v-model="formData.endTime" @click="prop.endTime = true; formTimeKey = 'endTime'" :placeholder="$t('label').endTime" class="input-text HH100 WW45 font12 center" readonly>
                 </div>
                 <div class="WW100 flex-bc H40 mt-20" v-else>
-                  <input type="text" v-model="formData.month" @click="prop.month = true; formTimeKey = 'month'" placeholder="选择时间" class="input-text HH100 WW80 font12 center" readonly>
-                  <p class="flex-c ml-10 font14" style="white-space:nowrap;">个月</p>
+                  <input type="text" v-model="formData.month" @click="prop.month = true; formTimeKey = 'month'" :placeholder="$t('label').selectTime" class="input-text HH100 WW80 font12 center" readonly>
+                  <p class="flex-c ml-10 font14" style="white-space:nowrap;">{{$t('label').months}}</p>
                 </div>
               </van-tab>
               <!-- <van-tab title="永远" name="c" v-if="sendType === '0' || urlParams.EndTime.toString().length > 13"> -->
-              <van-tab title="永远" name="c" v-if="sendType === '0'">
+              <van-tab :title="$t('label').forever" name="c" v-if="sendType === '0'">
                 <div class="flex-bc H40 mt-30 WW100">
-                  从
-                  <input type="text" v-model="formData.beginTime" @click="prop.beginTime = true; formTimeKey = 'beginTime'" placeholder="选择开始时间" class="input-text HH100 W120 font12 center" readonly>
-                  到
-                  <input type="text" placeholder="选择截止时间" value="永远" class="input-text HH100 W120 font12 center" readonly>
+                  <input type="text" v-model="formData.beginTime" @click="prop.beginTime = true; formTimeKey = 'beginTime'" :placeholder="$t('label').startTime" class="input-text HH100 WW45 font12 center" readonly>
+                  <input type="text" :value="$t('label').forever" class="input-text HH100 WW45 font12 center" readonly>
                 </div>
               </van-tab>
             </van-tabs>
           </div>
         </li>
         <li class="item mt-30">
-          <van-button type="info" @click="openPwd" class="WW100 btn-yellow" :disabled="false">发送</van-button>
+          <van-button type="info" @click="openPwd" class="WW100 btn-yellow" :disabled="false">{{$t('btn').send}}</van-button>
         </li>
       </ul>
     </div>
     <!-- 时间段 start -->
     <van-popup v-model="prop.startTime" position="bottom">
-      <van-datetime-picker type="date" @confirm="changeTime" @cancel="prop.startTime = false" :min-date="minDate"/>
+      <van-datetime-picker
+        type="date"
+        @confirm="changeTime"
+        @cancel="prop.startTime = false"
+        :min-date="minDate"
+        :confirm-button-text="$t('btn').confirm"
+        :cancel-button-text="$t('btn').cancel"
+      />
     </van-popup>
     <van-popup v-model="prop.endTime" position="bottom">
-      <van-datetime-picker type="date" @confirm="changeTime" @cancel="prop.endTime = false" :min-date="new Date(formData.startTime ? formData.startTime : Date.now())" :max-date="maxDate"/>
+      <van-datetime-picker
+        type="date"
+        @confirm="changeTime"
+        @cancel="prop.endTime = false"
+        :min-date="new Date(formData.startTime ? formData.startTime : Date.now())"
+        :max-date="maxDate"
+        :confirm-button-text="$t('btn').confirm"
+        :cancel-button-text="$t('btn').cancel"
+      />
     </van-popup>
     <!-- 时间段 end -->
 
@@ -84,8 +96,8 @@
         :columns="['3','4','5','6','7','8','9','10','11','12']"
         :default-index="0"
         show-toolbar
-        confirm-button-text="确认"
-        cancel-button-text="取消"
+        :confirm-button-text="$t('btn').confirm"
+        :cancel-button-text="$t('btn').cancel"
         @confirm="confirmMonth"
         @cancel="cancel"
       />
@@ -94,7 +106,14 @@
 
     <!-- 永远 start -->
     <van-popup v-model="prop.beginTime" position="bottom">
-      <van-datetime-picker type="date" @confirm="changeTime" @cancel="prop.beginTime = false" :min-date="minDate"/>
+      <van-datetime-picker
+        type="date"
+        @confirm="changeTime"
+        @cancel="prop.beginTime = false"
+        :min-date="minDate"
+        :confirm-button-text="$t('btn').confirm"
+        :cancel-button-text="$t('btn').cancel"
+      />
     </van-popup>
     <!-- 永远 end -->
 
@@ -107,7 +126,7 @@
     <!-- 发送确认 start -->
     <van-popup v-model="prop.confirm" :close-on-click-overlay="false" position="bottom">
       <div class="confirm-box">
-        <h3>发送确认</h3>
+        <h3>{{$t('label').send}}</h3>
         <ul class="ul">
           <li class="item">
             <p>From:</p> <p>{{address}}</p>
@@ -120,8 +139,8 @@
           </li>
         </ul>
         <div class="mt-30">
-          <van-button type="info" @click="sendTxns" class="WW30 btn-yellow">发送</van-button>
-          <van-button @click="cancel" class="WW30 ml-20 btn-radius">取消</van-button>
+          <van-button type="info" @click="sendTxns" class="WW30 btn-yellow">{{$t('btn').send}}</van-button>
+          <van-button @click="cancel" class="WW30 ml-20 btn-radius">{{$t('btn').cancel}}</van-button>
         </div>
       </div>
     </van-popup>
@@ -133,6 +152,10 @@
         <ul class="ul">
           <li class="item" v-for="(item, index) in addrList" :key="index" @click="selectAddr(index)">
             <p>{{item}}:</p> <p>{{index}}</p>
+          </li>
+          <li class="mt-15 font14 flex-c"  @click="toUrl('/person/address/add')">
+            <van-icon name="add-o" class="mr-10" />
+            {{$t('btn').newAdd}}
           </li>
         </ul>
       </div>
@@ -318,32 +341,32 @@ export default {
     },
     openPwd () {
       if (!this.$$.web3.utils.isAddress(this.formData.to)) {
-        this.$notify('地址不正确')
+        this.$notify(this.$t('warn').w_1)
         return
       }
       if (!this.formData.to) {
-        this.$notify('地址不能为空')
+        this.$notify(this.$t('warn').w_2)
         return
       }
       if (!this.formData.value || Number(this.formData.value) === 0) {
-        this.$notify('数量不能为空')
+        this.$notify(this.$t('warn').w_3)
         return
       }
       if (this.activeName === 'b') {
         if (this.selectTimeType) {
           if (!this.formData.startTime || !this.formData.endTime) {
-            this.$notify('请选择时间！')
+            this.$notify(this.$t('warn').w_4)
             return
           }
         } else {
           if (!this.formData.month) {
-            this.$notify('请选择月份！')
+            this.$notify(this.$t('warn').w_5)
             return
           }
         }
       }
       if (this.activeName === 'c' && !this.formData.beginTime) {
-        this.$notify('请选择开始时间')
+        this.$notify(this.$t('warn').w_6)
         return
       }
       this.formData.to = this.formData.to.replace(/\s/, '')
@@ -352,7 +375,7 @@ export default {
     toSign (data) {
       let fileData = this.keystore
       if (!fileData && !this.privateKey) {
-        this.$notify('登陆超时请重新登陆！')
+        this.$notify(this.$t('warn').w_7)
         return
       }
       if (data.state) {
@@ -491,7 +514,7 @@ export default {
         if (err) {
           this.$notify(err.toString())
         } else {
-          this.$notify({ type: 'success', message: '发送成功！Hash:' + hash })
+          this.$notify({ type: 'success', message: this.$t('success').s_4 + 'Hash:' + hash })
         }
         this.cancel()
       })

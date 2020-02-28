@@ -5,9 +5,10 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 
+import i18n from '@/local'
+
 import './assets/css/css.css'
 import './assets/css/style.css'
-
 import $$ from '@/libs/$$.js'
 
 import { 
@@ -76,5 +77,6 @@ Vue.component('unlock', unlock)
 new Vue({
   router,
   store,
+  i18n,
   render: h => h(App),
 }).$mount('#app')

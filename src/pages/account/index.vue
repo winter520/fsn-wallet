@@ -6,13 +6,13 @@
         <!-- <van-icon name="cross" class="close"/> -->
         <span class="close flex-c font12" @click="popup.account = true">
           <!-- <van-icon name="exchange" class="font14" />切换账户 -->
-          <!-- <van-icon name="exchange" class="font18" /> -->
-          <van-icon name="apps-o" class="font18" />
+          <van-icon name="exchange" class="font16 color_ff" />
+          <!-- <van-icon name="apps-o" class="font18" /> -->
           <!-- <van-icon name="bars" class="font18" /> -->
         </span>
         <div class="top-header">
           <div class="pic flex-c"><img src="@/assets/img/logo/logo0.png" class="WW100"></div>
-          <div class="txt font18">{{addrNode ? addrNode : '无'}}</div>
+          <div class="txt font18">{{addrNode ? addrNode : ''}}</div>
           <div class="txt flex-c" @click="qrcode(address)">
             {{$$.cutOut(address, 10, 12)}}
             <van-icon name="qr" class="font16 ml-10"/>
@@ -22,37 +22,34 @@
       </div>
       
       <div class="top-balance-bg flex-bc">
-        <div class="l">FSN资产：</div>
+        <div class="l">FSN {{$t('label').assets}}：</div>
         <div class="r">≈ {{$$.thousandBit(fsnBalance, 8)}}</div>
       </div>
     </div>
     <div>
       <van-tabs v-model="activeName" sticky class="bgContent">
-        <van-tab title="余额" name="a">
-          <van-list v-model="loading" :finished="finished" finished-text="没有更多了">
+        <van-tab :title="$t('label').balance" name="a">
+          <van-list v-model="loading" :finished="finished" :finished-text="$t('tip').noMore" :loading-text="$t('loading').l_1">
             <!-- <van-cell v-for="item in balanceData" :key="item" :title="item"/> -->
             <ul class="list-box">
-              <li v-for="(item, index) in balanceData" :key="index" class="item flex-bc" @click="toUrl('/send', {id: index, balance: item, type: '0'})">
+              <li v-for="(item, index) in balanceData" :key="index" class="item flex-bc" @click="toUrl('/send', {id: item.id, balance: item.balance, type: '0'})">
                 <div class="flex-sc">
-                  <!-- <span class="label">资产名：</span>{{formatAddr(index)}} -->
                   <div class="logo">
-                    <img :src="getCoinInfo(formatAddr(index)).logo" v-if="getCoinInfo(formatAddr(index))">
+                    <img :src="getCoinInfo(formatAddr(item.id)).logo" v-if="getCoinInfo(formatAddr(item.id))">
                     <i class="null flex-c" v-else>0x</i>
                   </div>
-                  <span class="label"></span>{{formatAddr(index)}}
+                  <span class="label"></span>{{formatAddr(item.id)}}
                 </div>
                 <div class="WW60">
-                  <!-- <p class="WW50 flex-sc"><span class="label">ID：</span>{{$$.cutOut(index, 8, 6)}}</p>
-                  <p class="WW50 flex-sc"><span class="label">余额：</span>{{$$.thousandBit($$.web3.utils.fromWei(item.toString(), 'ether'), 'no')}}</p> -->
-                  <p class="flex-ec">≈ {{$$.thousandBit($$.web3.utils.fromWei(item.toString(), 'ether'), 'no')}}</p>
-                  <p class="flex-ec font12">{{$$.cutOut(index, 8, 6)}}</p>
+                  <p class="flex-ec">≈ {{$$.thousandBit($$.web3.utils.fromWei(item.balance.toString(), 'ether'), 'no')}}</p>
+                  <p class="flex-ec font12">{{$$.cutOut(item.id, 8, 6)}}</p>
                 </div>
               </li>
             </ul>
           </van-list>
         </van-tab>
         <van-tab title="TimeLock" name="b">
-          <van-list v-model="loading" :finished="finished" finished-text="没有更多了">
+          <van-list v-model="loading" :finished="finished" :finished-text="$t('tip').noMore" :loading-text="$t('loading').l_1">
             <!-- <van-cell v-for="item in balanceData" :key="item" :title="item"/> -->
             <ul class="list-box">
               <li v-for="(item, index) in timelockData" :key="index" class="item" @click="toUrl('/send', {id: fsnId, balance: item.Value, StartTime: item.StartTime, EndTime: item.EndTime, type: '1'})">
@@ -83,9 +80,11 @@
     <van-popup v-model="popup.qrcode" :style="{ width: '280px', height: '360px' }" >
       <div class="qrcodeCont_box">
         <div id="qrcode" class="flex-c"></div>
-        <div class="qrcodeCont_title">
-          <h3 class="font12 addr">{{address}}</h3>
-          <h3 class="font14">你的地址</h3>
+        <div class="qrcodeCont_title flex-c flex-wrap">
+          <!-- <h3 class="font12 addr">{{address}}</h3> -->
+          <!-- <h3 class="font14">你的地址</h3> -->
+          <input type="text" class="input-text H30 WW100 font12 center" v-model="address" readonly id="copyAddress">
+          <van-button type="info" size="mini" @click="copyTxt('copyAddress')" class="mt-10 btn-radius plr20 H30 flex-c">{{$t('btn').copy}} Address</van-button>
         </div>
       </div>
     </van-popup>
@@ -193,10 +192,15 @@ export default {
     this.$$.isConnected().then(res => {
       this.initData()
     }).catch(err => {
-      this.$notify('节点连接失败！')
+      this.$notify(this.$t('error').e_1)
     })
   },
   methods: {
+    copyTxt (id) {
+      document.getElementById(id).select()
+      document.execCommand("Copy")
+      this.$notify({ type: 'success', message: this.$t('success').s_3 })
+    },
     changeAccount (data) {
       this.$store.commit('setKeystore', {info: data.ks})
       this.$store.commit('setAddress', {info: data.address})
@@ -207,11 +211,35 @@ export default {
       const batch = new this.$$.web3.BatchRequest()
 
       batch.add(this.$$.web3.fsn.getAllBalances.request( this.address, 'latest', (err, res) => {
+        this.balanceData = []
         if (err) {
-          this.balanceData = 0
+          this.balanceData = [{
+            id: this.fsnId,
+            balance: 0
+          }]
           this.fsnBalance = 0
         } else {
-          this.balanceData = res
+          // this.balanceData = res
+          let fsnObj = {
+            id: this.fsnId,
+            balance: 0
+          }
+          for (let obj in res) {
+            if (obj === this.fsnId) {
+              fsnObj = {
+                id: obj,
+                balance: res[obj]
+              }
+            } else {
+              this.balanceData.push({
+                id: obj,
+                balance: res[obj]
+              })
+            }
+          }
+          // console.log(fsnObj)
+          // console.log(this.balanceData)
+          this.balanceData.unshift(fsnObj)
           this.fsnBalance = this.$$.web3.utils.fromWei(res[this.fsnId], 'ether')
         }
       }))

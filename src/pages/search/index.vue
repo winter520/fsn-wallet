@@ -4,10 +4,12 @@
      <van-search
         v-model="searchVal"
         show-action
-        placeholder="交易哈希 / 区块块高"
+        :placeholder="$t('tip').tip3"
         @search="onSearch"
         @cancel="onCancel"
-      />
+      >
+        <div slot="action" @click="onCancel">{{$t('btn').cancel}}</div>
+     </van-search>
     </form>
 
     <div>
@@ -49,6 +51,7 @@ export default {
     },
     onCancel () {
       // Toast('取消')
+      this.searchVal = ''
       this.searchType = {
         a: 0,
         b: 0,

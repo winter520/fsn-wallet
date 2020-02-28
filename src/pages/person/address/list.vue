@@ -1,8 +1,8 @@
 <template>
   <div class="boxConntent1">
-    <van-button type="primary" size="large" @click="toUrl('/person/address/add')">新增地址</van-button>
+    <van-button type="default" size="large" @click="toUrl('/person/address/add')">{{$t('btn').newAdd}}</van-button>
 
-    <van-list v-model="loading" :finished="finished" finished-text="没有更多了">
+    <van-list v-model="loading" :finished="finished" :finished-text="$t('tip').noMore" :loading-text="$t('loading').l_1">
       <div class="a-list-box">
         <ul>
           <li class="item flex-bc" v-for="(item, index) in addressArr" :key="index" @click="toUrl('/person/address/edit', item)">

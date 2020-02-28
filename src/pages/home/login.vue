@@ -13,28 +13,28 @@
               </div>
             </li>
             <li class="item">
-              <label class="label">密码:</label>
+              <label class="label">{{$t('label').password}}:</label>
               <div class="input-box">
                 <input type="password" v-model="password" class="input-text HH100 WW100">
               </div>
             </li>
             <li class="item">
-              <van-button type="info" @click="inputFile" class="WW100 btn-yellow" :disabled="!showPwd || password.length <= 0">导入</van-button>
+              <van-button type="info" @click="inputFile" class="WW100 btn-yellow" :disabled="!showPwd || password.length <= 0">{{$t('btn').importWt}}</van-button>
             </li>
           </ul>
         </div>
       </van-tab>
-      <van-tab title="私钥" name="b">
+      <van-tab :title="$t('label').privateKey" name="b">
         <div class="form-box HH100 pt-30">
           <ul class="ul">
             <li class="item">
-              <label class="label">私钥:</label>
+              <label class="label">{{$t('label').privateKey}}:</label>
               <div class="input-box">
                 <input type="password" v-model="privateKey" class="input-text HH100 WW100">
               </div>
             </li>
             <li class="item">
-              <van-button type="info" @click="inputPrivateKey" class="WW100 btn-yellow" :disabled="privateKey.length <= 0">导入</van-button>
+              <van-button type="info" @click="inputPrivateKey" class="WW100 btn-yellow" :disabled="privateKey.length <= 0">{{$t('btn').importWt}}</van-button>
             </li>
           </ul>
         </div>
@@ -57,11 +57,10 @@ export default {
       password: '',
       privateKey: '',
       showPwd: false,
-      fileName: '请上传Keystore'
+      fileName: 'Import Keystore'
     }
   },
   mounted () {
-
   },
   methods: {
     tabChange () {
@@ -69,7 +68,7 @@ export default {
       this.password = ''
       this.privateKey = ''
       this.showPwd = false
-      this.fileName = '请上传Keystore'
+      this.fileName = 'Import Keystore'
     },
     fileUpChange (event) {
       let reader = new FileReader()
@@ -81,7 +80,7 @@ export default {
         if (this.showPwd) {
           this.fileName = fileName
         } else {
-          this.fileName = '请上传Keystore'
+          this.fileName = 'Import Keystore'
         }
       }
       reader.readAsText(event.target.files[0])

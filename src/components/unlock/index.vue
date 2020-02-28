@@ -2,19 +2,19 @@
   <div class="form-box HH100 pt-30">
     <ul class="ul">
       <li class="item" v-if="keystore">
-        <label class="label">密码:<span class="font12 color_99" style="font-weight:normal;">({{address}})</span></label>
+        <label class="label">{{$t('label').password}}:<span class="font12 color_99" style="font-weight:normal;">({{address}})</span></label>
         <div class="input-box">
           <input type="password" v-model="password" class="input-text HH100 WW100">
         </div>
       </li>
       <li class="item" v-if="!keystore">
-        <label class="label">私钥:<span class="font12 color_99" style="font-weight:normal;">({{address}})</span></label>
+        <label class="label">{{$t('label').privateKey}}:<span class="font12 color_99" style="font-weight:normal;">({{address}})</span></label>
         <div class="input-box">
           <input type="password" v-model="privateKey" class="input-text HH100 WW100">
         </div>
       </li>
       <li class="item">
-        <van-button type="info" @click="toBackData" class="WW100 btn-yellow" :disabled="password.length <= 0 && privateKey.length <= 0">解锁</van-button>
+        <van-button type="info" @click="toBackData" class="WW100 btn-yellow" :disabled="password.length <= 0 && privateKey.length <= 0">{{$t('btn').unlock}}</van-button>
       </li>
     </ul>
   </div>
@@ -60,7 +60,7 @@ export default {
         let prvtKey = new Buffer(this.$$.fixPkey(this.privateKey), 'hex')
         const wallet = new this.$$.wallet(prvtKey)
         if (this.address.toString() !== wallet.getChecksumAddressString().toString()) {
-          data.info = '账户错误！'
+          data.info = this.$t('error').e_2
         } else {
           data.state = 1
           data.info = prvtKey

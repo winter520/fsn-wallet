@@ -4,29 +4,34 @@
       <div class="W50 flex-c logo" style="margin:0 auto 10px">
         <img src="@/assets/img/logo/logo0.png" class="WW100">
       </div>
-      <div class="flex-c"> Gwhale Wallet </div>
-      <p class="flex-c font12">一款简约轻量的钱包</p>
+      <!-- <div class="flex-c"> Gwhale Wallet </div> -->
+      <div class="flex-c"> {{$t('title').appTitle}} </div>
+      <p class="flex-c font12">{{$t('tip').tip2}}</p>
     </div>
     <div class="p-list-box">
       <ul>
         <li class="item flex-bc" @click="toUrl('/person/wallet')">
-          <span class="flex-c"><van-icon name="paid" class="font18 mr-10"/>钱包管理</span>
+          <span class="flex-c"><van-icon name="paid" class="font18 mr-10"/>{{$t('nav').wtManger}}</span>
           <van-icon name="arrow" />
         </li>
         <li class="item flex-bc" @click="toUrl('/person/address')">
-          <span class="flex-c"><van-icon name="location-o" class="font18 mr-10" />地址管理</span>
+          <span class="flex-c"><van-icon name="location-o" class="font18 mr-10" />{{$t('nav').addrManger}}</span>
           <van-icon name="arrow" />
         </li>
         <li class="item flex-bc" @click="toUrl('/person/node')">
-          <span class="flex-c"><van-icon name="aim" class="font18 mr-10" />节点设置</span>
+          <span class="flex-c"><van-icon name="aim" class="font18 mr-10" />{{$t('nav').nodeManger}}</span>
+          <van-icon name="arrow" />
+        </li>
+        <li class="item flex-bc" @click="toUrl('/person/set')">
+          <span class="flex-c"><van-icon name="setting-o" class="font18 mr-10" />{{$t('nav').set}}</span>
           <van-icon name="arrow" />
         </li>
         <li class="item flex-bc mt-15" @click="toUrl('/login')">
-          <span class="flex-c"><van-icon name="peer-pay" class="font18 mr-10" />导入钱包</span>
+          <span class="flex-c"><van-icon name="peer-pay" class="font18 mr-10" />{{$t('btn').importWt}}</span>
           <van-icon name="arrow" />
         </li>
         <li class="item flex-bc" @click="toUrl('/register')">
-          <span class="flex-c"><van-icon name="share" class="font18 mr-10" />创建钱包</span>
+          <span class="flex-c"><van-icon name="share" class="font18 mr-10" />{{$t('btn').createWt}}</span>
           <van-icon name="arrow" />
         </li>
       </ul>
