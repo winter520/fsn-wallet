@@ -208,7 +208,7 @@ export default {
       privateKey: '',
       password: '',
       signTx: '',
-      fsnId: '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+      assetId: '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
       chainId: this.$$.web3.utils.toHex('46688'),
       urlParams: ''
     }
@@ -227,7 +227,7 @@ export default {
   },
   mounted () {
     this.urlParams = this.$route.query
-    this.formData.id = this.urlParams.id
+    this.assetId = this.urlParams.id
     this.balance = this.$$.web3.utils.fromWei(this.urlParams.balance, 'ether')
     this.sendType = this.urlParams.type
     if (this.sendType === '1') {
@@ -261,7 +261,7 @@ export default {
     // console.log(this.maxDate)
     // console.log(this.urlParams.type)
     // this.$$.isConnected().then(res => {
-    //   this.$$.web3.fsn.getBalance(this.fsnId, this.address, 'latest').then(res => {
+    //   this.$$.web3.fsn.getBalance(this.assetId, this.address, 'latest').then(res => {
     //     this.balance = this.$$.web3.utils.fromWei(res, 'ether')
     //   })
     // }).catch(err => {
@@ -310,40 +310,6 @@ export default {
       if (this.formTimeKey === 'startTime') {
         this.formData.endTime = ''
       }
-    },
-    getBaseData () {
-      return new Promise((resolve, reject) => {
-        let web3 = this.$$.web3
-        // let batch = web3.createBatch()
-        const batch = new web3.BatchRequest()
-        batch.add(web3.eth.getGasPrice.request())
-        batch.add(web3.eth.estimateGas.request({to: this.formData.to, data: this.formData.id}))
-        batch.add(web3.eth.getTransactionCount.request(this.address, 'pending'))
-        batch.requestManager.sendBatch(batch.requests, (err, res) => {
-          if (err) {
-            reject(err)
-          } else {
-            let data = {}
-            if (res[0].result || res[0].result === 0) {
-              data.gasPrice = parseInt(res[0].result)
-            } else {
-              reject(res[0].error.message)
-            }
-            if (res[1].result || res[1].result === 0) {
-              data.gasLimit = parseInt(res[1].result)
-            } else {
-              data.gasLimit = parseInt(21000)
-            }
-            if (res[2].result || res[2].result === 0) {
-              data.nonce = parseInt(res[2].result)
-              console.log(web3.utils.hexToNumberString(res[2].result))
-            } else {
-              reject(res[2].error.message)
-            }
-            resolve(data)
-          }
-        })
-      })
     },
     openPwd () {
       if (!this.$$.web3.utils.isAddress(this.formData.to)) {
@@ -413,7 +379,7 @@ export default {
       }
       this.$$.web3.fsntx.buildSendAssetTx({
         ...rawTx,
-        asset: this.fsnId
+        asset: this.assetId
       }).then(res => {
         console.log(res)
         res.chainId = this.chainId
@@ -460,7 +426,7 @@ export default {
       let rawTx2 = {
         start: startTime,
         end: endTime,
-        asset: this.fsnId,
+        asset: this.assetId,
       }
       console.log(rawTx2)
       this.$$.web3.fsntx.buildAssetToTimeLockTx({
@@ -494,7 +460,7 @@ export default {
       let rawTx2 = {
         start: this.$$.web3.utils.toHex(startTime),
         end: this.$$.web3.utils.toHex(endTime),
-        asset: this.fsnId,
+        asset: this.assetId,
       }
       console.log(rawTx2)
       this.$$.web3.fsntx.buildTimeLockToTimeLockTx({
@@ -517,12 +483,12 @@ export default {
     },
     sendTxns () {
       this.$$.web3.eth.sendSignedTransaction(this.signTx, (err, hash) => {
+        this.cancel()
         if (err) {
           this.$notify(err.toString())
         } else {
           this.$notify({ type: 'success', message: this.$t('success').s_4 + 'Hash:' + hash })
         }
-        this.cancel()
       })
     }
   }

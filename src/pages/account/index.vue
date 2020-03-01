@@ -59,7 +59,7 @@
                 </div>
                 <span class="label"></span>{{formatAddr(items.id)}}
               </div>
-              <li v-for="(item, index) in items.list" :key="index" class="item" @click="toUrl('/send', {id: fsnId, balance: item.Value, StartTime: item.StartTime, EndTime: item.EndTime, type: '1'})">
+              <li v-for="(item, index) in items.list" :key="index" class="item" @click="toUrl('/send', {id: items.id, balance: item.Value, StartTime: item.StartTime, EndTime: item.EndTime, type: '1'})">
                 <p class="flex-sc">
                   <span class="label">Amount：</span>{{$$.thousandBit($$.web3.utils.fromWei(item.Value.toString(), 'ether'), 'no')}}
                 </p>
