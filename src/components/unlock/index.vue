@@ -14,7 +14,7 @@
         </div>
       </li>
       <li class="item">
-        <van-button type="info" @click="toBackData" class="WW100 btn-yellow" :disabled="password.length <= 0 && privateKey.length <= 0">{{$t('btn').unlock}}</van-button>
+        <van-button type="info" @click="unlock" class="WW100 btn-yellow" :disabled="password.length <= 0 && privateKey.length <= 0" :loading="loading.btn" :loading-text="btnTxt" >{{$t('btn').unlock}}</van-button>
       </li>
     </ul>
   </div>
@@ -40,13 +40,24 @@ export default {
   data () {
     return {
       password: '',
-      privateKey: ''
+      privateKey: '',
+      loading: {
+        btn: false
+      },
+      btnTxt: this.$t('btn').unlock
     }
   },
   mounted () {
 
   },
   methods: {
+    unlock () {
+      this.loading.btn = true
+      this.btnTxt = this.$t('btn').unlock + '...'
+      setTimeout(() => {
+        this.toBackData()
+      }, 100)
+    },
     toBackData () {
       if (!this.keystore && !this.privateKey) {
         this.$notify(this.$t('warn').w_7)
@@ -61,12 +72,8 @@ export default {
           )
           this.privateKey = walletInfo.getPrivateKeyString()
         }
-        console.log(this.privateKey)
         let prvtKey = new Buffer(this.$$.fixPkey(this.privateKey), 'hex')
-        console.log(this.privateKey)
-        console.log(prvtKey)
         const wallet = new this.$$.wallet(prvtKey)
-        console.log(123)
         if (this.address.toString() !== wallet.getChecksumAddressString().toString()) {
           data.info = this.$t('error').e_2
         } else {
@@ -83,6 +90,8 @@ export default {
         this.$emit('setPrviKey', data)
         this.privateKey = ''
         this.password = ''
+        this.loading.btn = false
+        this.btnTxt = this.$t('btn').unlock
       }
     }
   }
