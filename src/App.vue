@@ -3,26 +3,40 @@
     <!-- <img alt="Vue logo" src="./assets/logo.png">
     <HelloWorld msg="Welcome to Your Vue.js App"/> -->
     <router-view></router-view>
+    <input type="text" class="input-text WW100 font12 center" v-model="updateUrl" style="height:0;opacity: 0" id="copyAddress">
   </div>
 </template>
 
 <script>
 // import HelloWorld from './components/HelloWorld.vue'
 import {mapState,mapGetters,mapMutations,mapActions} from 'vuex'
+import {methods, data} from '@/assets/js/update/index.js'
 export default {
   name: 'app',
+  data () {
+    return {
+      ...data
+    }
+  },
   // components: {
   //   HelloWorld
   // }
   mounted () {
-    // this.initData()
+    this.update()
   },
   methods: {
-    // ...mapActions(['getAddress', 'getKeystore']),
-    // initData () {
-    //   this.getAddress()
-    //   this.getKeystore()
-    // }
+    ...methods,
+    versionTip (data) {
+      let oneDay = 1000 * 60 * 60 * 24
+      let versionTipTime = localStorage.getItem('versionTime') ? Number(localStorage.getItem('versionTime')) : 0
+      versionTipTime = Date.now() - versionTipTime
+      if (Number(data.level) === 1 && versionTipTime > oneDay) {
+        this.versionTipNoMust()
+      } else if (versionTipTime > oneDay) {
+        this.versionTipMust()
+      }
+    },
+    latestVersionTip () {}
   }
 }
 </script>

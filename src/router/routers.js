@@ -36,6 +36,7 @@ export default [
           title: '发送',
           lang: 'send',
           showHdOrBtn: '1',
+          navBtmCur: '1'
         },
         component: resolve => require.ensure([], () => resolve(require('@/pages/account/send.vue')) ),
       }

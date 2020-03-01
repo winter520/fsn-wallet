@@ -48,7 +48,8 @@ export default {
 		wtManger: 'Wallet Manage',
 		addrManger: 'Address Manage',
 		nodeManger: 'Node Manage',
-		set: 'Set '
+		set: 'Set ',
+		update: 'Update'
 	},
 	title: {
 		appTitle: 'Gwhale Wallet',
@@ -93,6 +94,10 @@ export default {
 	},
 	tip: {
 		noMore: 'No more',
+		nowVersion: 'Current version',
+		havingVersion: 'Is the latest version',
+		newVersion: 'The latest version is',
+		copyVersionUrl: 'Please copy the website and go to the browser to update',
 		tip1: 'Please save keystore. If it is lost, it will not be recovered.',
 		tip2: 'Simple, Easy, Safe',
 		tip3: 'TxHash / Blocks'

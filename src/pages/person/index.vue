@@ -34,8 +34,13 @@
           <span class="flex-c"><van-icon name="share" class="font18 mr-10" />{{$t('btn').createWt}}</span>
           <van-icon name="arrow" />
         </li>
+        <li class="item flex-bc mt-15" @click="update">
+          <span class="flex-c"><van-icon name="replay" class="font18 mr-10" />{{$t('nav').update}}</span>
+          <van-icon name="arrow" />
+        </li>
       </ul>
     </div>
+    <!-- <input type="text" class="input-text H30 WW100 font12 center" v-model="updateUrl" style="opacity: 0" id="copyAddress"> -->
   </div>
 </template>
 
@@ -58,22 +63,33 @@
 </style>
 
 <script>
-
+import {methods, data} from '@/assets/js/update/index.js'
 export default {
   name: 'person',
   data () {
     return {
-
+      ...data
     }
   },
   mounted () {
 
   },
   methods: {
-    close () {
-      this.$store.commit('setKeystore', {info: ''})
-      this.$store.commit('setAddress', {info: ''})
-      this.$router.push('/enter')
+    ...methods,
+    versionTip (data) {
+      if (Number(data.level) === 1) {
+        this.versionTipNoMust()
+      } else {
+        this.versionTipMust()
+      }
+    },
+    latestVersionTip () {
+      this.$dialog.alert({
+        title: this.$t('tip').havingVersion,
+        message: this.$t('tip').nowVersion + '：' + this.$$.version
+      }).then(() => {
+        // on close
+      })
     },
   }
 }

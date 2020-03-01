@@ -48,7 +48,8 @@ export default {
 		wtManger: '钱包管理',
 		addrManger: '地址管理',
 		nodeManger: '节点设置',
-		set: '设置 '
+		set: '设置 ',
+		update: '检查更新'
 	},
 	title: {
 		appTitle: '金鱼钱包',
@@ -94,6 +95,10 @@ export default {
 	},
 	tip: {
 		noMore: '没有更多了',
+		nowVersion: '当前版本',
+		havingVersion: '已是最新版本',
+		newVersion: '当前最新版本为',
+		copyVersionUrl: '请复制网址前往浏览器进行更新',
 		tip1: '请保存好Keystore，如有遗失将无法找回',
 		tip2: '简单，易用，安全',
 		tip3: '交易哈希 / 区块块高'
