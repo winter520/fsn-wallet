@@ -14,7 +14,7 @@
         </div>
       </li>
       <li class="item">
-        <van-button type="info" @click="unlock" class="WW100 btn-yellow" :disabled="password.length <= 0 && privateKey.length <= 0" :loading="loading.btn" :loading-text="btnTxt" >{{$t('btn').unlock}}</van-button>
+        <van-button type="info" @click="unlock" class="WW100 btn-yellow" :disabled="password.length <= 0 && privateKey.length <= 0" :loading="loading.btn" :loading-text="btnTxt" loading-type="spinner">{{$t('btn').unlock}}</van-button>
       </li>
     </ul>
   </div>
@@ -48,7 +48,7 @@ export default {
     }
   },
   mounted () {
-
+    this.loading.btn = false
   },
   methods: {
     unlock () {

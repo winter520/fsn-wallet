@@ -2,7 +2,7 @@
   <div class="bgContent">
     <div class="e-box">
       <div class="W90 flex-c" style="margin:0 auto 30px">
-        <img src="@/assets/img/logo/logo1.png" class="WW100">
+        <img src="@/assets/img/logo/logo2.png" class="WW100">
       </div>
       <!-- <div class="flex-c mb-20 color_99">
         FUSION Wallet
