@@ -254,6 +254,7 @@ export default {
         }
       }))
       batch.add(this.$$.web3.fsn.getAllTimeLockBalances.request(this.address, 'latest', (err, res) => {
+        this.timelockData = []
         if (err) {
           console.log(err)
           this.timelockData = []
