@@ -6,7 +6,7 @@
         <!-- <van-icon name="cross" class="close"/> -->
         <span class="close flex-c font12" @click="popup.account = true">
           <!-- <van-icon name="exchange" class="font14" />切换账户 -->
-          <van-icon name="exchange" class="font16 color_ff" />
+          <van-icon name="exchange" class="font18" />
           <!-- <van-icon name="apps-o" class="font18" /> -->
           <!-- <van-icon name="bars" class="font18" /> -->
         </span>
@@ -32,6 +32,7 @@
           <van-list v-model="loading" :finished="finished" :finished-text="$t('tip').noMore" :loading-text="$t('loading').l_1">
             <!-- <van-cell v-for="item in balanceData" :key="item" :title="item"/> -->
             <ul class="list-box">
+              <!-- {{balanceData}} -->
               <li v-for="(item, index) in balanceData" :key="index" class="item flex-bc" @click="toUrl('/send', {id: item.id, balance: item.balance, type: '0'})">
                 <div class="flex-sc">
                   <div class="logo">
@@ -184,9 +185,12 @@ export default {
   },
   components: {walletAccount},
   watch: {
-    address () {
-      this.initData()
-    }
+    // address () {
+    // console.log(4)
+    //   this.balanceData = []
+    //   this.timelockData = []
+    //   this.initData()
+    // }
   },
   computed: {
     address () {
@@ -197,7 +201,7 @@ export default {
     }
   },
   mounted () {
-    // console.log(coinInfo)
+    // console.log(123)
     // console.log(this.$$.web3)
     this.$$.isConnected().then(res => {
       this.initData()
@@ -218,21 +222,22 @@ export default {
       this.popup.account = false
     },
     initData () {
+      if (!this.address) return
       const batch = new this.$$.web3.BatchRequest()
-
       batch.add(this.$$.web3.fsn.getAllBalances.request( this.address, 'latest', (err, res) => {
         this.balanceData = []
         if (err) {
+          console.log(err)
           this.balanceData = [{
             id: this.fsnId,
-            balance: 0
+            balance: '0'
           }]
           this.fsnBalance = 0
         } else {
           // this.balanceData = res
           let fsnObj = {
             id: this.fsnId,
-            balance: 0
+            balance: '0'
           }
           for (let obj in res) {
             if (obj === this.fsnId) {
@@ -247,10 +252,8 @@ export default {
               })
             }
           }
-          // console.log(fsnObj)
-          // console.log(this.balanceData)
           this.balanceData.unshift(fsnObj)
-          this.fsnBalance = this.$$.web3.utils.fromWei(res[this.fsnId], 'ether')
+          this.fsnBalance = this.$$.web3.utils.fromWei(fsnObj.balance, 'ether')
         }
       }))
       batch.add(this.$$.web3.fsn.getAllTimeLockBalances.request(this.address, 'latest', (err, res) => {
@@ -261,7 +264,7 @@ export default {
         } else {
           let fsnObj = {
             id: this.fsnId,
-            balance: 0
+            list: []
           }
           for (let obj in res) {
             if (obj === this.fsnId) {
@@ -276,10 +279,9 @@ export default {
               })
             }
           }
-          this.timelockData.unshift(fsnObj)
-          console.log(this.timelockData)
-          // this.timelockData = res
-          // this.timelockData = this.timelockData[this.fsnId] && this.timelockData[this.fsnId].Items ? this.timelockData[this.fsnId].Items : []
+          if (fsnObj.list.length > 0) {
+            this.timelockData.unshift(fsnObj)
+          }
         }
       }))
       batch.add(this.$$.web3.fsn.getNotation.request(this.address, 'latest', (err, res) => {

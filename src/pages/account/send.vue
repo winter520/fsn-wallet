@@ -137,6 +137,9 @@
           <li class="item">
             <p>Value:</p> <p>{{formData.value}}</p>
           </li>
+          <li class="item">
+            <p>MaxFee:</p> <p>{{maxFee}}</p>
+          </li>
         </ul>
         <div class="mt-30">
           <van-button type="info" @click="sendTxns" class="WW30 btn-yellow">{{$t('btn').send}}</van-button>
@@ -210,7 +213,8 @@ export default {
       signTx: '',
       assetId: '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
       chainId: this.$$.web3.utils.toHex('46688'),
-      urlParams: ''
+      urlParams: '',
+      maxFee: 0
     }
   },
   computed: {
@@ -345,11 +349,14 @@ export default {
       this.prop.pwd = true
     },
     toSign (data) {
-      let fileData = this.keystore
-      if (!fileData && !this.privateKey) {
-        this.$notify(this.$t('warn').w_7)
-        return
-      }
+      // console.log(data)
+      // console.log(data)
+      // console.log(this.privateKey)
+      // let fileData = this.keystore
+      // if (!fileData && !this.privateKey) {
+      //   this.$notify(this.$t('warn').w_7)
+      //   return
+      // }
       if (data.state) {
         if (this.sendType === '0') {
           if (this.activeName === 'a') {
@@ -381,7 +388,9 @@ export default {
         ...rawTx,
         asset: this.assetId
       }).then(res => {
-        console.log(res)
+        this.maxFee = parseInt(res.gas) * parseInt(res.gasPrice)
+        this.maxFee = this.$$.web3.utils.fromWei(this.maxFee.toString(), 'ether')
+
         res.chainId = this.chainId
         res.from = this.address
         console.log(res)
@@ -392,7 +401,7 @@ export default {
         this.prop.confirm = true
         console.log(this.signTx)
       }).catch(err => {
-        this.$notify(err.error.message)
+        this.$notify(err.toString())
       })
     },
     AssetToTimeLockSign (pwd, type) {
@@ -408,7 +417,9 @@ export default {
           startTime = Date.parse(this.formData.startTime)
           endTime = Date.parse(this.formData.endTime)
         } else {
-          startTime = Date.now()
+          startTime = this.$$.timeChange({date: Date.now(), type: 'yyyy-mm-dd', format: '-'})
+          // startTime = Date.now()
+          startTime = new Date(startTime).getTime()
           endTime = startTime + (1000 * 60 * 60 * 24 * 30 * Number(this.formData.month))
         }
         startTime = parseInt(startTime / 1000)
@@ -433,6 +444,8 @@ export default {
         ...rawTx,
         ...rawTx2
       }).then(rawTx => {
+        this.maxFee = parseInt(rawTx.gas) * parseInt(rawTx.gasPrice)
+        this.maxFee = this.$$.web3.utils.fromWei(this.maxFee.toString(), 'ether')
         rawTx.chainId = this.chainId
         rawTx.from = this.address
         console.log(rawTx)
@@ -468,6 +481,8 @@ export default {
         ...rawTx,
         ...rawTx2
       }).then(rawTx => {
+        this.maxFee = parseInt(rawTx.gas) * parseInt(rawTx.gasPrice)
+        this.maxFee = this.$$.web3.utils.fromWei(this.maxFee.toString(), 'ether')
         rawTx.chainId = this.chainId
         rawTx.from = this.address
         console.log(rawTx)

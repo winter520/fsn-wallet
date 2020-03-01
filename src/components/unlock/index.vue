@@ -48,6 +48,10 @@ export default {
   },
   methods: {
     toBackData () {
+      if (!this.keystore && !this.privateKey) {
+        this.$notify(this.$t('warn').w_7)
+        return
+      }
       let data = {state: 0, info: ''}
       try {
         if (this.keystore) {
@@ -57,8 +61,12 @@ export default {
           )
           this.privateKey = walletInfo.getPrivateKeyString()
         }
+        console.log(this.privateKey)
         let prvtKey = new Buffer(this.$$.fixPkey(this.privateKey), 'hex')
+        console.log(this.privateKey)
+        console.log(prvtKey)
         const wallet = new this.$$.wallet(prvtKey)
+        console.log(123)
         if (this.address.toString() !== wallet.getChecksumAddressString().toString()) {
           data.info = this.$t('error').e_2
         } else {
