@@ -51,8 +51,15 @@
         <van-tab title="TimeLock" name="b">
           <van-list v-model="loading" :finished="finished" :finished-text="$t('tip').noMore" :loading-text="$t('loading').l_1">
             <!-- <van-cell v-for="item in balanceData" :key="item" :title="item"/> -->
-            <ul class="list-box">
-              <li v-for="(item, index) in timelockData" :key="index" class="item" @click="toUrl('/send', {id: fsnId, balance: item.Value, StartTime: item.StartTime, EndTime: item.EndTime, type: '1'})">
+            <ul class="list-box" v-for="(items, indexs) in timelockData" :key="indexs">
+              <div class="flex-sc assets">
+                <div class="logo">
+                  <img :src="getCoinInfo(formatAddr(items.id)).logo" v-if="getCoinInfo(formatAddr(items.id))">
+                  <i class="null flex-c" v-else>0x</i>
+                </div>
+                <span class="label"></span>{{formatAddr(items.id)}}
+              </div>
+              <li v-for="(item, index) in items.list" :key="index" class="item" @click="toUrl('/send', {id: fsnId, balance: item.Value, StartTime: item.StartTime, EndTime: item.EndTime, type: '1'})">
                 <p class="flex-sc">
                   <span class="label">Amount：</span>{{$$.thousandBit($$.web3.utils.fromWei(item.Value.toString(), 'ether'), 'no')}}
                 </p>
@@ -127,17 +134,20 @@
 }
 .list-box {
   width: 100%;padding: 0px 0;
+  .assets {
+    width: 100%;padding: 10px 15px; background: #eee;
+  }
+  .logo {
+    width: 25px; height: 25px;margin-right: 10px;
+    img {
+      width: 100%;
+    }
+    .null {
+      width: 100%;height: 100%;border:1px solid #e8be29;border-radius: 100%;font-size: 12px;color: #e8be29;
+    }
+  }
   .item {
     width: 100%;padding: 8px 15px;border-bottom: 1px solid #ddd;font-size: 14px;
-    .logo {
-      width: 25px; height: 25px;margin-right: 10px;
-      img {
-        width: 100%;
-      }
-      .null {
-        width: 100%;height: 100%;border:1px solid #e8be29;border-radius: 100%;font-size: 12px;color: #e8be29;
-      }
-    }
     .label {
       font-weight: bold;
     }
@@ -248,8 +258,27 @@ export default {
           console.log(err)
           this.timelockData = []
         } else {
-          this.timelockData = res
-          this.timelockData = this.timelockData[this.fsnId] && this.timelockData[this.fsnId].Items ? this.timelockData[this.fsnId].Items : []
+          let fsnObj = {
+            id: this.fsnId,
+            balance: 0
+          }
+          for (let obj in res) {
+            if (obj === this.fsnId) {
+              fsnObj = {
+                id: obj,
+                list: res[obj].Items
+              }
+            } else {
+              this.timelockData.push({
+                id: obj,
+                list: res[obj].Items
+              })
+            }
+          }
+          this.timelockData.unshift(fsnObj)
+          console.log(this.timelockData)
+          // this.timelockData = res
+          // this.timelockData = this.timelockData[this.fsnId] && this.timelockData[this.fsnId].Items ? this.timelockData[this.fsnId].Items : []
         }
       }))
       batch.add(this.$$.web3.fsn.getNotation.request(this.address, 'latest', (err, res) => {
