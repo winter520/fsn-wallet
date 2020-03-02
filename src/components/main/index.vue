@@ -3,7 +3,11 @@
     <header-nav @on-refresh="reload" v-if="showHdOrBtn == 1 || showHdOrBtn == 2"></header-nav>
 
     <van-pull-refresh v-model="isLoading" @refresh="reload">
-      <transition name="van-fade">
+      <!-- <transition name="van-fade"> -->
+      <!-- <transition name="van-slide-up"> -->
+      <!-- <transition name="van-slide-down"> -->
+      <!-- <transition name="van-slide-right"> -->
+      <transition>
         <router-view v-if="isRefresh"></router-view>
       </transition>
     </van-pull-refresh>

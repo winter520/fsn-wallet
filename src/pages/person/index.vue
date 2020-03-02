@@ -77,10 +77,10 @@ export default {
   methods: {
     ...methods,
     versionTip (data) {
-      if (Number(data.level) === 1) {
-        this.versionTipNoMust(data)
-      } else {
+      if (Number(data.level) === 2 || Number(data.level) === 3) {
         this.versionTipMust(data)
+      } else {
+        this.versionTipNoMust(data)
       }
     },
     latestVersionTip () {

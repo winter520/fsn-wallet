@@ -30,10 +30,10 @@ export default {
       let oneDay = 1000 * 60 * 60 * 24
       let versionTipTime = localStorage.getItem('versionTime') ? Number(localStorage.getItem('versionTime')) : 0
       versionTipTime = Date.now() - versionTipTime
-      if (Number(data.level) === 1 && versionTipTime > oneDay) {
-        this.versionTipNoMust(data)
-      } else if (versionTipTime > oneDay) {
+      if ((Number(data.level) === 2 || Number(data.level) === 3) && versionTipTime > oneDay) {
         this.versionTipMust(data)
+      } else if (versionTipTime > oneDay) {
+        this.versionTipNoMust(data)
       }
     },
     latestVersionTip () {}
