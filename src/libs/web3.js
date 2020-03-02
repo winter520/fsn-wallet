@@ -16,27 +16,27 @@ try {
 web3.extend({
   property: 'fsn',
   methods: [
-    {
-      name: 'assetToTimeLock',
-      call: 'fsntx_assetToTimeLock',
-      params: 6,
-      inputFormatter: [null, null, null, null, null, null],
-      outputFormatter: null
-    },
-    {
-      name: 'timeLockToTimeLock',
-      call: 'fsntx_timeLockToTimeLock',
-      params: 1,
-      inputFormatter: [null],
-      outputFormatter: null
-    },
-    {
-      name: 'timeLockToAsset',
-      call: 'fsntx_timeLockToAsset',
-      params: 1,
-      inputFormatter: [null],
-      outputFormatter: null
-    },
+    // {
+    //   name: 'assetToTimeLock',
+    //   call: 'fsntx_assetToTimeLock',
+    //   params: 6,
+    //   inputFormatter: [null, null, null, null, null, null],
+    //   outputFormatter: null
+    // },
+    // {
+    //   name: 'timeLockToTimeLock',
+    //   call: 'fsntx_timeLockToTimeLock',
+    //   params: 1,
+    //   inputFormatter: [null],
+    //   outputFormatter: null
+    // },
+    // {
+    //   name: 'timeLockToAsset',
+    //   call: 'fsntx_timeLockToAsset',
+    //   params: 1,
+    //   inputFormatter: [null],
+    //   outputFormatter: null
+    // },
     {
       name: 'getTimeLockBalance',
       call: 'fsn_getTimeLockBalance',
@@ -160,8 +160,20 @@ web3.extend({
       inputFormatter: null
     },
     {
+      name: "buildTimeLockToAssetTx",
+      call: "fsntx_buildTimeLockToAssetTx",
+      params: 1,
+      inputFormatter: null
+    },
+    {
       name: "timeLockToTimeLock",
       call: "fsntx_timeLockToTimeLock",
+      params: 1,
+      inputFormatter: null
+    },
+    {
+      name: "timeLockToAsset",
+      call: "fsntx_timeLockToAsset",
       params: 1,
       inputFormatter: null
     },

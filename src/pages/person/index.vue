@@ -78,9 +78,9 @@ export default {
     ...methods,
     versionTip (data) {
       if (Number(data.level) === 1) {
-        this.versionTipNoMust()
+        this.versionTipNoMust(data)
       } else {
-        this.versionTipMust()
+        this.versionTipMust(data)
       }
     },
     latestVersionTip () {

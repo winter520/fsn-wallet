@@ -3,7 +3,8 @@ export default {
 	error: {
 		e_1: '连接失败！',
 		e_2: '账户错误！',
-		e_3: '地址错误，请重新填写！'
+		e_3: '地址错误，请重新填写！',
+		e_4: '超出限制，请先删除后再添加！'
 	},
 	warn: {
 		w_1: '地址不正确',
@@ -94,7 +95,8 @@ export default {
 	action: {
 	},
 	tip: {
-		noMore: '没有更多了',
+		// noMore: '没有更多了',
+		noMore: '',
 		nowVersion: '当前版本',
 		havingVersion: '已是最新版本',
 		newVersion: '当前最新版本为',

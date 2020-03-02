@@ -3,7 +3,8 @@ export default {
 	error: {
 		e_1: 'Connection failed!',
 		e_2: 'Account error!',
-		e_3: 'Wrong address, please fill in again!'
+		e_3: 'Wrong address, please fill in again!',
+		e_4: 'Exceeding the limit, please delete before adding!'
 	},
 	warn: {
 		w_1: 'Incorrect address',
@@ -93,7 +94,8 @@ export default {
 	action: {
 	},
 	tip: {
-		noMore: 'No more',
+		// noMore: 'No more',
+		noMore: '',
 		nowVersion: 'Current version',
 		havingVersion: 'Is the latest version',
 		newVersion: 'The latest version is',

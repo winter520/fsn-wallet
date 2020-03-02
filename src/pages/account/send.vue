@@ -8,10 +8,10 @@
         <li class="item">
           <label class="label">{{$t('label').address}}:</label>
           <div class="input-box relative">
-            <input type="text" v-model="formData.to" class="input-text HH100 WW100 pr-40">
-            <div class="down-arrow flex-c" @click="prop.address = true"><van-icon name="location-o" /></div>
+            <input type="text" v-model="formData.to" class="input-text HH100 WW100 pr-40" :disabled="isToAsset && sendType === '1' && activeName === 'a'">
+            <div class="down-arrow flex-c" @click="isToAsset && sendType === '1' ? '' : prop.address = true"><van-icon name="location-o" /></div>
           </div>
-          <span class="flex-sc font12 color_99">{{$t('label').balance}}：{{balance}}</span>
+          <!-- <span class="flex-sc font12 color_99">{{$t('label').balance}}：{{balance}}</span> -->
         </li>
         <!-- <li class="item">
           <label class="label">YOU SEND:</label>
@@ -24,12 +24,14 @@
           <div class="input-box">
             <input type="number" v-model="formData.value" class="input-text HH100 WW100">
           </div>
+          <span class="flex-sc font12 color_99">{{$t('label').balance}}：{{balance}}</span>
         </li>
         <li class="item">
           <label class="label">{{$t('label').timelock}}:</label>
           <div class="WW100">
-            <van-tabs v-model="activeName" sticky class="bgContent">
-              <van-tab :title="$t('label').null" name="a" v-if="sendType === '0'">
+            <van-tabs v-model="activeName" sticky class="bgContent" @click="onTabClick">
+              <!-- <van-tab :title="$t('label').null" name="a" v-if="sendType === '0'"> -->
+              <van-tab :title="!isToAsset && sendType === '0' ? $t('label').null : 'To Assets'" name="a" :disabled="!isToAsset && sendType === '1'">
               </van-tab>
               <van-tab :title="$t('label').timelock" name="b">
                 <div class="WW100" v-if="sendType === '0'">
@@ -51,9 +53,9 @@
                   <p class="flex-c ml-10 font14" style="white-space:nowrap;">{{$t('label').months}}</p>
                 </div>
               </van-tab>
-              <!-- <van-tab title="永远" name="c" v-if="sendType === '0' || urlParams.EndTime.toString().length > 13"> -->
-              <van-tab :title="$t('label').forever" name="c" v-if="sendType === '0'">
-                <div class="flex-bc H40 mt-30 WW100">
+              <van-tab title="永远" name="c" v-if="sendType === '0' || urlParams.EndTime.toString().length > 13">
+              <!-- <van-tab :title="$t('label').forever" name="c" v-if="sendType === '0'"> -->
+                <div class="flex-bc H40 mt-20 WW100">
                   <input type="text" v-model="formData.beginTime" @click="prop.beginTime = true; formTimeKey = 'beginTime'" :placeholder="$t('label').startTime" class="input-text HH100 WW45 font12 center" readonly>
                   <input type="text" :value="$t('label').forever" class="input-text HH100 WW45 font12 center" readonly>
                 </div>
@@ -82,7 +84,7 @@
         type="date"
         @confirm="changeTime"
         @cancel="prop.endTime = false"
-        :min-date="new Date(formData.startTime ? formData.startTime : Date.now())"
+        :min-date="minDate"
         :max-date="maxDate"
         :confirm-button-text="$t('btn').confirm"
         :cancel-button-text="$t('btn').cancel"
@@ -93,8 +95,8 @@
     <!-- 选择月份 start -->
     <van-popup v-model="prop.month" position="bottom">
       <van-picker 
-        :columns="['3','4','5','6','7','8','9','10','11','12']"
-        :default-index="0"
+        :columns="['1','2','3','4','5','6','7','8','9','10','11','12']"
+        :default-index="2"
         show-toolbar
         :confirm-button-text="$t('btn').confirm"
         :cancel-button-text="$t('btn').cancel"
@@ -119,7 +121,7 @@
 
     <!-- 签名 start -->
     <van-popup v-model="prop.pwd" position="bottom">
-      <unlock :keystore="keystore" :address="address" @setPrviKey="toSign"></unlock>
+      <unlock v-if="prop.pwd" :keystore="keystore" :address="address" @setPrviKey="toSign"></unlock>
     </van-popup>
     <!-- 签名 end -->
 
@@ -192,6 +194,7 @@ export default {
       sendType: '0',
       selectTimeType: false,
       formData: {
+        month: 3
         // to: '0x014DC8Fd1221AA87C800A2fF8dB60130b333D410',
         // value: 0.1
       },
@@ -214,7 +217,8 @@ export default {
       assetId: '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
       chainId: this.$$.web3.utils.toHex('46688'),
       urlParams: '',
-      maxFee: 0
+      maxFee: 0,
+      isToAsset: false
     }
   },
   computed: {
@@ -225,7 +229,7 @@ export default {
       return this.$store.state.keystore
     },
     addrList () {
-      console.log(this.$store.state.addressObj)
+      // console.log(this.$store.state.addressObj)
       return this.$store.state.addressObj
     }
   },
@@ -236,24 +240,32 @@ export default {
     this.sendType = this.urlParams.type
     if (this.sendType === '1') {
       this.selectTimeType = true
-      this.activeName = 'b'
-      this.minDate = new Date(Number(this.urlParams.StartTime))
-      this.maxDate = new Date(Number(this.urlParams.EndTime))
+      // this.activeName = 'b'
+      this.minDate = new Date(Number(this.urlParams.StartTime) * 1000)
+      this.maxDate = new Date(Number(this.urlParams.EndTime) * 1000)
       this.formData.endTime = this.$$.timeChange({
         date: this.urlParams.EndTime,
+        type: 'yyyy-mm-dd',
+        format: '-'
+      })
+      this.formData.beginTime = this.formData.startTime = this.$$.timeChange({
+        date: this.urlParams.StartTime,
         type: 'yyyy-mm-dd',
         format: '-'
       })
       if (this.urlParams.EndTime.toString().length > 13) {
         this.formData.endTime = ''
         this.maxDate = new Date('3333-12-30')
+        if (Number(this.urlParams.StartTime) * 1000 < Date.now()) {
+          this.isToAsset = true
+          this.formData.to = this.address
+        } else  {
+          this.activeName = 'b'
+        }
       }
-      this.formData.beginTime = this.formData.startTime = this.$$.timeChange({
-        date: this.urlParams.StartTime,
-        type: 'yyyy-mm-dd',
-        format: '-'
-      })
-      // console.log(this.activeName)
+
+      // console.log(this.formData)
+      console.log(this.activeName)
       // this.formData.endTime = new Date(this.urlParams.EndTime)
     }
     let nodeUrl = localStorage.getItem('network')
@@ -273,6 +285,13 @@ export default {
     // })
   },
   methods: {
+    onTabClick () {
+      if (this.isToAsset && this.activeName === 'a' && this.sendType === '1') {
+        this.formData.to = this.address
+      } else if (this.isToAsset &&  this.sendType === '1') {
+        this.formData.to = ''
+      }
+    },
     cancel () {
       // this.formData = {}
       this.prop.confirm = false
@@ -303,10 +322,6 @@ export default {
         this.formData.startTime = this.formData.endTime = ''
       }
     },
-    // tabChangeTime (val) {
-    //   // console.log(val)
-    //   console.log(this.activeName)
-    // },
     changeTime (val) {
       let timestamp = Date.parse(val)
       this.formData[this.formTimeKey] = this.$$.timeChange({date: timestamp, type: 'yyyy-mm-dd', format: '-'})
@@ -331,6 +346,7 @@ export default {
       if (this.activeName === 'b') {
         if (this.selectTimeType) {
           if (!this.formData.startTime || !this.formData.endTime) {
+          // if (!this.formData.startTime) {
             this.$notify(this.$t('warn').w_4)
             return
           }
@@ -367,11 +383,12 @@ export default {
             this.AssetToTimeLockSign(data.info, 'Forever')
           }
         } else {
-          if (this.activeName === 'b') {
+          if (this.activeName === 'a') {
+            this.TimeLockToAssetSign(data.info)
+          } else if (this.activeName === 'b') {
             this.TimeLockToTimeLockSign(data.info)
-            // this.AssetToTimeLockSign(data.info)
           } else {
-            this.AssetToTimeLockSign(data.info, 'Forever')
+            this.TimeLockToTimeLockSign(data.info, 'Forever')
           }
         }
       } else {
@@ -379,114 +396,183 @@ export default {
       }
     },
     AssetToAssetSign (pwd) {
+      this.buildTxnsAndSign(pwd, 'buildAssetToTimeLockTx')
+      // let rawTx = {
+      //   from: this.address,
+      //   to: this.formData.to.replace(/\s/, ''),
+      //   value: this.$$.web3.utils.toHex(this.$$.web3.utils.toWei(this.formData.value.toString(), 'ether')),
+      //   asset: this.assetId
+      // }
+      // this.$$.web3.fsntx.buildSendAssetTx({
+      //   ...rawTx,
+      // }).then(res => {
+      //   this.maxFee = parseInt(res.gas) * parseInt(res.gasPrice)
+      //   this.maxFee = this.$$.web3.utils.fromWei(this.maxFee.toString(), 'ether')
+
+      //   res.chainId = this.chainId
+      //   res.from = this.address
+      //   console.log(res)
+      //   let tx = new Tx(res)
+      //   tx.sign(pwd)
+      //   this.signTx = tx.serialize().toString("hex")
+      //   this.signTx = this.signTx.indexOf("0x") === 0 ? this.signTx : ("0x" + this.signTx)
+      //   this.prop.confirm = true
+      //   console.log(this.signTx)
+      // }).catch(err => {
+      //   this.$notify(err.toString())
+      // })
+    },
+    AssetToTimeLockSign (pwd, type) {
+      let endTime = '', startTime = ''
+      if (type && type === 'Forever') {
+        startTime = new Date(this.formData.beginTime).getTime()
+        endTime = this.$$.web3.utils.toHex('18446744073709551615')
+      } else {
+        if (this.selectTimeType) {
+          startTime = new Date(this.formData.startTime).getTime()
+          endTime = new Date(this.formData.endTime).getTime()
+        } else {
+          startTime = this.$$.timeChange({date: Date.now(), type: 'yyyy-mm-dd', format: '-'})
+          startTime = new Date(startTime).getTime()
+          endTime = startTime + (1000 * 60 * 60 * 24 * 30 * Number(this.formData.month))
+        }
+        endTime = parseInt(endTime / 1000)
+        endTime = this.$$.web3.utils.toHex(endTime)
+      }
+
+      startTime = parseInt(startTime / 1000)
+      startTime = this.$$.web3.utils.toHex(startTime)
+      this.buildTxnsAndSign(pwd, 'buildAssetToTimeLockTx', startTime, endTime)
+      // console.log(this.formData)
+      // let rawTx = {
+      //   from: this.address,
+      //   to: this.formData.to.replace(/\s/, ''),
+      //   value: this.$$.web3.utils.toHex(this.$$.web3.utils.toWei(this.formData.value.toString(), 'ether')),
+      //   start: startTime,
+      //   end: endTime,
+      //   asset: this.assetId,
+      // }
+      // console.log(rawTx)
+      // this.$$.web3.fsntx.buildAssetToTimeLockTx({
+      //   ...rawTx
+      // }).then(res => {
+      //   this.maxFee = parseInt(res.gas) * parseInt(res.gasPrice)
+      //   this.maxFee = this.$$.web3.utils.fromWei(this.maxFee.toString(), 'ether')
+      //   res.chainId = this.chainId
+      //   res.from = this.address
+      //   console.log(res)
+      //   let tx = new Tx(res)
+      //   tx.sign(pwd)
+      //   this.signTx = tx.serialize().toString("hex")
+      //   this.signTx = this.signTx.indexOf("0x") === 0 ? this.signTx : ("0x" + this.signTx)
+      //   this.prop.confirm = true
+      //   console.log(this.signTx)
+      // }).catch(err => {
+      //   this.$notify(err.toString())
+      // })
+    },
+    TimeLockToTimeLockSign (pwd, type) {
+      let endTime = '', startTime = ''
+      if (type && type === 'Forever') {
+        startTime = new Date(this.formData.beginTime).getTime()
+        endTime = this.$$.web3.utils.toHex('18446744073709551615')
+      } else {
+        startTime = new Date(this.formData.startTime).getTime()
+        endTime = new Date(this.formData.endTime).getTime()
+        endTime = parseInt(endTime / 1000)
+        endTime = this.$$.web3.utils.toHex(endTime)
+      }
+      startTime = parseInt(startTime / 1000)
+      startTime = this.$$.web3.utils.toHex(startTime)
+      console.log(startTime)
+      this.buildTxnsAndSign(pwd, 'buildTimeLockToTimeLockTx', startTime, endTime)
+      // let rawTx = {
+      //   from: this.address,
+      //   to: this.formData.to.replace(/\s/, ''),
+      //   value: this.$$.web3.utils.toHex(this.$$.web3.utils.toWei(this.formData.value.toString(), 'ether')),
+      //   start: startTime,
+      //   end: endTime,
+      //   asset: this.assetId,
+      // }
+      // console.log(rawTx)
+      // this.$$.web3.fsntx.buildTimeLockToTimeLockTx({
+      //   ...rawTx
+      // }).then(res => {
+      //   this.maxFee = parseInt(res.gas) * parseInt(res.gasPrice)
+      //   this.maxFee = this.$$.web3.utils.fromWei(this.maxFee.toString(), 'ether')
+      //   res.chainId = this.chainId
+      //   res.from = this.address
+      //   console.log(res)
+      //   let tx = new Tx(res)
+      //   tx.sign(pwd)
+      //   this.signTx = tx.serialize().toString("hex")
+      //   this.signTx = this.signTx.indexOf("0x") === 0 ? this.signTx : ("0x" + this.signTx)
+      //   this.prop.confirm = true
+      //   console.log(this.signTx)
+      // }).catch(err => {
+      //   this.$notify(err.toString())
+      // })
+    },
+    TimeLockToAssetSign (pwd) {
+      let endTime = '', startTime = ''
+      startTime = this.$$.timeChange({date: Date.now(), type: 'yyyy-mm-dd', format: '-'})
+      startTime = new Date(startTime).getTime()
+      startTime = parseInt(startTime / 1000)
+      startTime = this.$$.web3.utils.toHex(startTime)
+      endTime = this.$$.web3.utils.toHex('18446744073709551615')
+      console.log(startTime)
+      this.buildTxnsAndSign(pwd, 'buildTimeLockToAssetTx', startTime, endTime)
+      // this.buildTxnsAndSign(pwd, 'timeLockToAsset', startTime, endTime)
+      // let rawTx = {
+      //   from: this.address,
+      //   to: this.formData.to.replace(/\s/, ''),
+      //   value: this.$$.web3.utils.toHex(this.$$.web3.utils.toWei(this.formData.value.toString(), 'ether')),
+      //   start: startTime,
+      //   end: endTime,
+      //   asset: this.assetId,
+      // }
+      // console.log(rawTx)
+      // this.$$.web3.fsntx.buildTimeLockToTimeLockTx({
+      //   ...rawTx
+      // }).then(res => {
+      //   this.maxFee = parseInt(res.gas) * parseInt(res.gasPrice)
+      //   this.maxFee = this.$$.web3.utils.fromWei(this.maxFee.toString(), 'ether')
+      //   res.chainId = this.chainId
+      //   res.from = this.address
+      //   console.log(res)
+      //   let tx = new Tx(res)
+      //   tx.sign(pwd)
+      //   this.signTx = tx.serialize().toString("hex")
+      //   this.signTx = this.signTx.indexOf("0x") === 0 ? this.signTx : ("0x" + this.signTx)
+      //   this.prop.confirm = true
+      //   console.log(this.signTx)
+      // }).catch(err => {
+      //   this.$notify(err.toString())
+      // })
+    },
+    buildTxnsAndSign (pwd, param, startTime, endTime) {
       let rawTx = {
         from: this.address,
         to: this.formData.to.replace(/\s/, ''),
         value: this.$$.web3.utils.toHex(this.$$.web3.utils.toWei(this.formData.value.toString(), 'ether')),
+        asset: this.assetId,
       }
-      this.$$.web3.fsntx.buildSendAssetTx({
-        ...rawTx,
-        asset: this.assetId
+      if (startTime) {
+        rawTx.startTime = startTime
+      }
+      if (endTime) {
+        rawTx.endTime = endTime
+      }
+      console.log(rawTx)
+      this.$$.web3.fsntx[param]({
+        ...rawTx
       }).then(res => {
         this.maxFee = parseInt(res.gas) * parseInt(res.gasPrice)
         this.maxFee = this.$$.web3.utils.fromWei(this.maxFee.toString(), 'ether')
-
         res.chainId = this.chainId
         res.from = this.address
         console.log(res)
         let tx = new Tx(res)
-        tx.sign(pwd)
-        this.signTx = tx.serialize().toString("hex")
-        this.signTx = this.signTx.indexOf("0x") === 0 ? this.signTx : ("0x" + this.signTx)
-        this.prop.confirm = true
-        console.log(this.signTx)
-      }).catch(err => {
-        this.$notify(err.toString())
-      })
-    },
-    AssetToTimeLockSign (pwd, type) {
-      let endTime = '', startTime = ''
-      if (type === 'Forever') {
-        startTime = Date.parse(this.formData.startTime)
-        startTime = parseInt(startTime / 1000)
-        startTime = this.$$.web3.utils.toHex(startTime)
-        endTime = this.$$.web3.utils.toHex('18446744073709551615')
-        // endTime = null
-      } else {
-        if (this.selectTimeType) {
-          startTime = Date.parse(this.formData.startTime)
-          endTime = Date.parse(this.formData.endTime)
-        } else {
-          startTime = this.$$.timeChange({date: Date.now(), type: 'yyyy-mm-dd', format: '-'})
-          // startTime = Date.now()
-          startTime = new Date(startTime).getTime()
-          endTime = startTime + (1000 * 60 * 60 * 24 * 30 * Number(this.formData.month))
-        }
-        startTime = parseInt(startTime / 1000)
-        startTime = this.$$.web3.utils.toHex(startTime)
-        endTime = parseInt(endTime / 1000)
-        endTime = this.$$.web3.utils.toHex(endTime)
-      }
-      console.log(this.formData)
-      let rawTx = {
-        from: this.address,
-        to: this.formData.to.replace(/\s/, ''),
-        value: this.$$.web3.utils.toHex(this.$$.web3.utils.toWei(this.formData.value.toString(), 'ether')),
-      }
-      console.log(rawTx)
-      let rawTx2 = {
-        start: startTime,
-        end: endTime,
-        asset: this.assetId,
-      }
-      console.log(rawTx2)
-      this.$$.web3.fsntx.buildAssetToTimeLockTx({
-        ...rawTx,
-        ...rawTx2
-      }).then(rawTx => {
-        this.maxFee = parseInt(rawTx.gas) * parseInt(rawTx.gasPrice)
-        this.maxFee = this.$$.web3.utils.fromWei(this.maxFee.toString(), 'ether')
-        rawTx.chainId = this.chainId
-        rawTx.from = this.address
-        console.log(rawTx)
-        let tx = new Tx(rawTx)
-        tx.sign(pwd)
-        this.signTx = tx.serialize().toString("hex")
-        this.signTx = this.signTx.indexOf("0x") === 0 ? this.signTx : ("0x" + this.signTx)
-        this.prop.confirm = true
-        console.log(this.signTx)
-      }).catch(err => {
-        this.$notify(err.toString())
-      })
-    },
-    TimeLockToTimeLockSign (pwd) {
-      let endTime = '', startTime = ''
-      startTime = Date.parse(this.formData.startTime)
-      endTime = Date.parse(this.formData.endTime)
-      startTime = parseInt(Date.parse(startTime) / 1000)
-      endTime = parseInt(Date.parse(endTime) / 1000)
-      let rawTx = {
-        from: this.address,
-        to: this.formData.to.replace(/\s/, ''),
-        value: this.$$.web3.utils.toHex(this.$$.web3.utils.toWei(this.formData.value.toString(), 'ether')),
-      }
-      let rawTx2 = {
-        start: this.$$.web3.utils.toHex(startTime),
-        end: this.$$.web3.utils.toHex(endTime),
-        asset: this.assetId,
-      }
-      console.log(rawTx2)
-      this.$$.web3.fsntx.buildTimeLockToTimeLockTx({
-      // this.$$.web3.fsntx.timeLockToTimeLock({
-        ...rawTx,
-        ...rawTx2
-      }).then(rawTx => {
-        this.maxFee = parseInt(rawTx.gas) * parseInt(rawTx.gasPrice)
-        this.maxFee = this.$$.web3.utils.fromWei(this.maxFee.toString(), 'ether')
-        rawTx.chainId = this.chainId
-        rawTx.from = this.address
-        console.log(rawTx)
-        let tx = new Tx(rawTx)
         tx.sign(pwd)
         this.signTx = tx.serialize().toString("hex")
         this.signTx = this.signTx.indexOf("0x") === 0 ? this.signTx : ("0x" + this.signTx)
@@ -502,6 +588,7 @@ export default {
         if (err) {
           this.$notify(err.toString())
         } else {
+          console.log(hash)
           this.$notify({ type: 'success', message: this.$t('success').s_4 + 'Hash:' + hash })
         }
       })

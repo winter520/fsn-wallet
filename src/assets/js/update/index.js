@@ -26,7 +26,7 @@ export const methods = {
       this.latestVersionTip()
     }
   },
-  versionTipMust() {
+  versionTipMust(data) {
     this.$dialog.alert({
       title: this.$t('nav').update,
       message: this.$t('tip').newVersion + '：' + data.version + '<br>' + this.$t('tip').copyVersionUrl + '：' + data.url,
@@ -36,7 +36,7 @@ export const methods = {
       this.setTime()
     })
   },
-  versionTipNoMust() {
+  versionTipNoMust(data) {
     this.$dialog.confirm({
       title: this.$t('nav').update,
       message: this.$t('tip').newVersion + '：' + data.version + '<br>' + this.$t('tip').copyVersionUrl + '：' + data.url,

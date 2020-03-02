@@ -12,7 +12,7 @@
         </span>
         <div class="top-header">
           <div class="pic flex-c"><img src="@/assets/img/logo/logo0.png" class="WW100"></div>
-          <div class="txt font18">{{addrNode ? addrNode : ''}}</div>
+          <div class="txt font18 H25">{{addrNode ? addrNode : ''}}</div>
           <div class="txt flex-c" @click="qrcode(address)">
             {{$$.cutOut(address, 10, 12)}}
             <van-icon name="qr" class="font16 ml-10"/>
@@ -27,7 +27,7 @@
       </div>
     </div>
     <div>
-      <van-tabs v-model="activeName" sticky class="bgContent">
+      <van-tabs v-model="activeName" sticky class="bgContent" @click="onTabClick">
         <van-tab :title="$t('label').balance" name="a">
           <van-list v-model="loading" :finished="finished" :finished-text="$t('tip').noMore" :loading-text="$t('loading').l_1">
             <!-- <van-cell v-for="item in balanceData" :key="item" :title="item"/> -->
@@ -203,6 +203,8 @@ export default {
   mounted () {
     // console.log(123)
     // console.log(this.$$.web3)
+    let at = this.$route.query.activeTab ? this.$route.query.activeTab : 'first'
+    this.activeName = at
     this.$$.isConnected().then(res => {
       this.initData()
     }).catch(err => {
@@ -210,6 +212,10 @@ export default {
     })
   },
   methods: {
+    onTabClick () {
+      // console.log(this.activeName)
+      this.$router.push({path: this.$route.path, query: {activeTab: this.activeName}})
+    },
     copyTxt (id) {
       document.getElementById(id).select()
       document.execCommand("Copy")

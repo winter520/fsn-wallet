@@ -49,6 +49,7 @@ export default {
   },
   mounted () {
     this.loading.btn = false
+    console.log(this.loading.btn)
   },
   methods: {
     unlock () {

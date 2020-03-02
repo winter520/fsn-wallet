@@ -35,13 +35,27 @@ export default {
       addressObj: {}
     }
   },
+  computed: {
+    addrList () {
+      return this.$store.state.addressObj
+    }
+  },
   mounted () {
-
+    console.log(this.addrList)
   },
   methods: {
     handleClick () {
       if (!this.addressObj.address || !this.$$.web3.utils.isAddress(this.addressObj.address)) {
         this.$notify(this.$t('error').e_3)
+        return
+      }
+      let addrNum = 0
+      for (let obj in this.addrList) {
+        addrNum ++ 
+      }
+      console.log(addrNum)
+      if (addrNum > 15) {
+        this.$notify(this.$t('error').e_4)
         return
       }
       this.$store.commit('setAddressObj', {
