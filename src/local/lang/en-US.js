@@ -45,11 +45,11 @@ export default {
 	nav: {
 		assets: 'Assets',
 		search: 'Search',
-		my: 'My',
+		my: 'Me',
 		wtManger: 'Wallet Manage',
 		addrManger: 'Address Manage',
 		nodeManger: 'Node Manage',
-		set: 'Set ',
+		set: 'Settings',
 		update: 'Update'
 	},
 	title: {

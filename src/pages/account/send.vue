@@ -53,7 +53,7 @@
                   <p class="flex-c ml-10 font14" style="white-space:nowrap;">{{$t('label').months}}</p>
                 </div>
               </van-tab>
-              <van-tab title="永远" name="c" v-if="sendType === '0' || urlParams.EndTime.toString().length > 13">
+              <van-tab :title="$t('label').forever" name="c" v-if="sendType === '0' || urlParams.EndTime.toString().length > 13">
               <!-- <van-tab :title="$t('label').forever" name="c" v-if="sendType === '0'"> -->
                 <div class="flex-bc H40 mt-20 WW100">
                   <input type="text" v-model="formData.beginTime" @click="prop.beginTime = true; formTimeKey = 'beginTime'" :placeholder="$t('label').startTime" class="input-text HH100 WW45 font12 center" readonly>

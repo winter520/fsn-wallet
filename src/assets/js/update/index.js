@@ -33,6 +33,7 @@ export const methods = {
       confirmButtonText: this.$t('btn').copy
     }).then(() => {
       this.copyTxt('copyAddress')
+      // plus.runtime.openURL("https://www.baidu.com")
       this.setTime()
     })
   },
@@ -43,6 +44,7 @@ export const methods = {
       confirmButtonText: this.$t('btn').copy
     }).then(() => {
       this.copyTxt('copyAddress')
+      // plus.runtime.openURL("https://www.baidu.com")
       this.setTime()
     }).catch(err => {
       console.log(err)
